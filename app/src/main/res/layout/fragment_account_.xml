@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    tools:context=".Fragment.Account_Fragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/green"
+        android:orientation="vertical">
+
+           <LinearLayout
+               android:layout_width="match_parent"
+               android:layout_height="match_parent"
+               android:background="@color/green"
+               android:orientation="horizontal">
+
+               <Button
+                   android:id="@+id/btnProfile"
+                   android:layout_width="110dp"
+                   android:layout_height="wrap_content"
+                   android:background="@color/green"
+                   android:text="Profile"
+                   android:textSize="20sp"
+                   android:textColor="@color/white" />
+
+               <Button
+                   android:id="@+id/btnPayments"
+                   android:layout_width="115dp"
+                   android:layout_height="wrap_content"
+                   android:background="@color/green"
+                   android:text="Payments"
+                   android:textSize="20sp"
+                   android:textColor="@color/white" />
+
+
+
+               <Button
+                   android:id="@+id/btnMembership"
+                   android:layout_width="135dp"
+                   android:layout_height="wrap_content"
+                   android:background="@color/green"
+                   android:text="Membership"
+                   android:textSize="20sp"
+                   android:textColor="@color/white" />
+
+           </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="681dp"
+            android:orientation="vertical">
+
+            <androidx.fragment.app.FragmentContainerView
+                android:id="@+id/fragmentContainerView"
+                android:name="com.example.tremoo.Fragment.Profile_Fragment"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+        </LinearLayout>
+
+
+
+    </LinearLayout>
+</FrameLayout>
