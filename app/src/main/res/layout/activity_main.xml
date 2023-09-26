@@ -8,26 +8,10 @@
     android:background="@color/colorWhite"
     tools:context=".MainActivity">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolBar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:title=""
-            app:titleTextColor="@color/white"
-            android:background="@color/green"
-            android:elevation="3dp"/>
-
-    </LinearLayout>
-
     <FrameLayout
         android:id="@+id/frameLayout"
         android:layout_width="match_parent"
-        android:layout_height="619dp"
+        android:layout_height="match_parent"
         android:layout_above="@id/bottomNavigation"
         android:layout_alignParentStart="true"
         android:layout_marginStart="0dp" />
@@ -38,6 +22,9 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:background="@color/green"
-        app:menu="@menu/bottom_nav_menu" />
+        app:menu="@menu/bottom_nav_menu"
+        android:visibility="visible"/>
+
+
 
 </RelativeLayout>

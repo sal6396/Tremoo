@@ -1,8 +1,8 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools"
     android:background="@color/white"
     tools:context=".Fragment.Profile_Fragment">
 
@@ -14,8 +14,7 @@
         <androidx.cardview.widget.CardView
             android:id="@+id/cardProfile"
             android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:layout_gravity="fill">
+            android:layout_height="60dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -30,7 +29,7 @@
                     android:gravity="center"
                     android:text="Profile"
                     android:textSize="30sp"
-                    android:textColor="@color/white"/>
+                    android:textColor="@color/white" />
 
             </LinearLayout>
 
@@ -38,16 +37,17 @@
 
         <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="0dp"
+            android:layout_weight="1">
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:orientation="vertical">
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:orientation="vertical">
 
                     <com.google.android.material.imageview.ShapeableImageView
@@ -82,12 +82,8 @@
                         android:gravity="center"
                         android:text=""
                         android:textColor="@color/black"
-                        android:textSize="20dp"
-                        android:textStyle="bold"
-                        app:layout_constraintEnd_toEndOf="@+id/userImage"
-                        app:layout_constraintHorizontal_bias="0.563"
-                        app:layout_constraintStart_toStartOf="@+id/userImage"
-                        app:layout_constraintTop_toBottomOf="@+id/userImage" />
+                        android:textSize="20sp"
+                        android:textStyle="bold" />
 
                 </LinearLayout>
 
@@ -103,8 +99,9 @@
                         android:layout_height="wrap_content"
                         android:textColorHint="@color/textcolor">
 
-                        <EditText
-                            android:id="@+id/textViewEmail"
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/editTextEmail"
                             android:layout_width="match_parent"
                             android:layout_height="60dp"
                             android:layout_marginTop="10dp"
@@ -119,13 +116,14 @@
 
                     </com.google.android.material.textfield.TextInputLayout>
 
+
                     <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textColorHint="@color/textcolor">
 
-                        <EditText
-                            android:id="@+id/textViewPhone"
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/editTextPhone"
                             android:layout_width="match_parent"
                             android:layout_height="60dp"
                             android:layout_marginTop="10dp"
@@ -144,8 +142,8 @@
                         android:layout_height="wrap_content"
                         android:textColorHint="@color/textcolor">
 
-                        <EditText
-                            android:id="@+id/textViewEducatio"
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/editTextEducatio"
                             android:layout_width="match_parent"
                             android:layout_height="60dp"
                             android:layout_marginTop="10dp"
@@ -165,8 +163,8 @@
                         android:layout_height="wrap_content"
                         android:textColorHint="@color/textcolor">
 
-                        <EditText
-                            android:id="@+id/textViewCountry"
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/editTextCountry"
                             android:layout_width="match_parent"
                             android:layout_height="60dp"
                             android:layout_marginTop="10dp"
@@ -186,8 +184,8 @@
                         android:layout_height="wrap_content"
                         android:textColorHint="@color/textcolor">
 
-                        <EditText
-                            android:id="@+id/textViewCity"
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/editTextCity"
                             android:layout_width="match_parent"
                             android:layout_height="60dp"
                             android:layout_marginTop="10dp"
@@ -207,8 +205,8 @@
                         android:layout_height="wrap_content"
                         android:textColorHint="@color/textcolor">
 
-                        <EditText
-                            android:id="@+id/textViewGander"
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/editTextGander"
                             android:layout_width="match_parent"
                             android:layout_height="60dp"
                             android:layout_marginTop="10dp"
