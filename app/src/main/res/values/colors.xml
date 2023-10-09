@@ -16,12 +16,13 @@
     <color name="yellowLight">#fff777</color>
     <color name="xyz">#74F49F</color>
     <color name="pqr">#76d1ff</color>
-    <color name="green">#0BE152</color>
+    <color name="green">#2DBE60</color>
     <color name="dark_green">#038008</color>
     <color name="skybluelight">#C8E7F5</color>
     <color name="grey">#252943 </color>
     <color name="ligreen">#87A857</color>
     <color name="lightgrey">#F6F7F9</color>
     <color name="textcolor">#5555</color>
+    <color name="tremootheme">#2DBE60</color>
     <color name="textcolorlight">#55F5F6F2</color>
 </resources>

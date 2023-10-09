@@ -1,42 +1,22 @@
 package com.ai.tremoo;
 
-import android.content.Context;
-
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.toolbox.Volley;
-
 public class RequestHandler {
+
     private static RequestHandler instance;
-    private RequestQueue requestQueue;
+    private ApiService apiService;
 
-    private static Context ctx;
-
-    private RequestHandler(Context context) {
-        ctx = context;
-        requestQueue = getRequestQueue();
-
-
+    private RequestHandler() {
+        apiService = RetrofitClient.getInstance().getApiService();
     }
 
-    public static synchronized RequestHandler getInstance(Context context) {
+    public static synchronized RequestHandler getInstance() {
         if (instance == null) {
-            instance = new RequestHandler(context);
+            instance = new RequestHandler();
         }
         return instance;
     }
 
-    public RequestQueue getRequestQueue() {
-        if (requestQueue == null) {
-            // getApplicationContext() is key, it keeps you from leaking the
-            // Activity or BroadcastReceiver if someone passes one in.
-            requestQueue = Volley.newRequestQueue(ctx.getApplicationContext());
-        }
-        return requestQueue;
+    public ApiService getApi() {
+        return apiService;
     }
-
-    public <T> void addToRequestQueue(Request<T> req) {
-        getRequestQueue().add(req);
-    }
-
 }

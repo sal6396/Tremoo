@@ -6,6 +6,7 @@
     android:background="@color/white"
     android:layout_height="match_parent"
     tools:context=".Camera_Activity">
+    <include layout="@layout/toolbar"/>
 
 
     <Button
@@ -20,10 +21,10 @@
 
     <VideoView
         android:id="@+id/buttonVideo"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_above="@+id/button2"
-        android:layout_alignParentTop="true">
-    </VideoView>
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="55dp" />
 
 </RelativeLayout>

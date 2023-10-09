@@ -23,6 +23,7 @@ import androidx.fragment.app.FragmentTransaction;
 import com.ai.tremoo.ApiService;
 import com.ai.tremoo.Audio_Activity;
 import com.ai.tremoo.Constants;
+import com.ai.tremoo.MainActivity;
 import com.ai.tremoo.R;
 import com.ai.tremoo.RequestHandler;
 import com.android.volley.AuthFailureError;
@@ -77,6 +78,7 @@ public class Submit_Data_Fragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_submit__data_, container, false);
 
+
         radioGroup = rootView.findViewById(R.id.radioGroup);
         radioButtonImage = rootView.findViewById(R.id.radioButtonImage);
         radioButtonVideo = rootView.findViewById(R.id.radioButtonVideo);
@@ -88,7 +90,7 @@ public class Submit_Data_Fragment extends Fragment {
         btnAudio = rootView.findViewById(R.id.record_Audio);
         imageView = rootView.findViewById(R.id.imageView);
         dataSubmission = rootView.findViewById(R.id.dataSubmission);
-        backSumission = rootView.findViewById(R.id.backSubmission);
+//        backSumission = rootView.findViewById(R.id.backSubmission);
 
         dataSubmission.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -103,18 +105,18 @@ public class Submit_Data_Fragment extends Fragment {
             }
         });
 
-        backSumission.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // Create an instance of Submit_Data_Fragment
-                Project_Details_Fragment projectDetailsFragment = new Project_Details_Fragment();
-
-                FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
-                transaction.replace(R.id.frameLayout, projectDetailsFragment); // Use the instance
-                transaction.addToBackStack(null); // Optional: Adds to back stack
-                transaction.commit();
-            }
-        });
+//        backSumission.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                // Create an instance of Submit_Data_Fragment
+//                Project_Details_Fragment projectDetailsFragment = new Project_Details_Fragment();
+//
+//                FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
+//                transaction.replace(R.id.frameLayout, projectDetailsFragment); // Use the instance
+//                transaction.addToBackStack(null); // Optional: Adds to back stack
+//                transaction.commit();
+//            }
+//        });
 
         setupRadioGroupListener();
 
@@ -341,7 +343,7 @@ public class Submit_Data_Fragment extends Fragment {
         );
 
         // Add the request to the Volley request queue
-        RequestHandler.getInstance(requireContext()).addToRequestQueue(jsonObjectRequest);
+//        RequestHandler.getInstance(requireContext()).addToRequestQueue(jsonObjectRequest);
     }
 
     private class VolleyMultipartRequest extends Request<NetworkResponse> {

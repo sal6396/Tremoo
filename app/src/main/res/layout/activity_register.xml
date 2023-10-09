@@ -66,7 +66,7 @@
                     <EditText
                         android:id="@+id/editTextTextRegUsername"
                         android:layout_width="match_parent"
-                        android:layout_height="60dp"
+                        android:layout_height="match_parent"
                         android:layout_marginTop="10dp"
                         android:background="@drawable/input_bg"
                         android:backgroundTint="@color/lightgrey"
@@ -88,7 +88,7 @@
                     <EditText
                         android:id="@+id/editTextEmail"
                         android:layout_width="match_parent"
-                        android:layout_height="60dp"
+                        android:layout_height="match_parent"
                         android:layout_marginTop="10dp"
                         android:background="@drawable/input_bg"
                         android:backgroundTint="@color/lightgrey"
@@ -113,7 +113,7 @@
                     <EditText
                         android:id="@+id/editTextTextRegPassword"
                         android:layout_width="match_parent"
-                        android:layout_height="60dp"
+                        android:layout_height="match_parent"
                         android:layout_marginTop="10dp"
                         android:background="@drawable/input_bg"
                         android:paddingStart="5dp"
@@ -137,7 +137,7 @@
                     <EditText
                         android:id="@+id/editTextTextRegConfirmPassword"
                         android:layout_width="match_parent"
-                        android:layout_height="60dp"
+                        android:layout_height="match_parent"
                         android:layout_marginTop="10dp"
                         android:background="@drawable/input_bg"
                         android:backgroundTint="@color/lightgrey"
@@ -159,7 +159,7 @@
                     <EditText
                         android:id="@+id/editTextTextPhoneNo"
                         android:layout_width="match_parent"
-                        android:layout_height="60dp"
+                        android:layout_height="match_parent"
                         android:layout_marginTop="10dp"
                         android:background="@drawable/input_bg"
                         android:paddingStart="5dp"
@@ -173,14 +173,33 @@
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="60dp"
                     android:textColorHint="@color/textcolor">
 
                     <EditText
-                        android:id="@+id/editTextTextEducation"
+                        android:id="@+id/editTextTextGender"
                         android:layout_width="match_parent"
-                        android:layout_height="60dp"
+                        android:layout_height="match_parent"
                         android:layout_marginTop="10dp"
+                        android:background="@drawable/input_bg"
+                        android:paddingStart="5dp"
+                        android:backgroundTint="@color/lightgrey"
+                        android:ems="10"
+                        android:hint="Gender"
+                        android:inputType="text"
+                        android:textColor="@color/black"
+                        android:textColorHint="@color/textcolor" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:textColorHint="@color/textcolor">
+
+                    <Spinner
+                        android:id="@+id/spinnerEducation"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
                         android:background="@drawable/input_bg"
                         android:paddingStart="5dp"
                         android:backgroundTint="@color/lightgrey"
@@ -192,17 +211,36 @@
 
                 </com.google.android.material.textfield.TextInputLayout>
 
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:textColorHint="@color/textcolor">
+
+                    <Spinner
+                        android:id="@+id/spinnerCountry"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/input_bg"
+                        android:paddingStart="5dp"
+                        android:backgroundTint="@color/lightgrey"
+                        android:ems="10"
+                        android:hint="Enter Your Country"
+                        android:inputType="text"
+                        android:textColor="@color/black"
+                        android:textColorHint="@color/textcolor" />
+
+                </com.google.android.material.textfield.TextInputLayout>
 
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="60dp"
                     android:textColorHint="@color/textcolor">
 
                     <EditText
                         android:id="@+id/editTextTextCity"
                         android:layout_width="match_parent"
-                        android:layout_height="60dp"
+                        android:layout_height="match_parent"
                         android:layout_marginTop="10dp"
                         android:background="@drawable/input_bg"
                         android:paddingStart="5dp"
@@ -214,16 +252,6 @@
                         android:textColorHint="@color/textcolor" />
 
                 </com.google.android.material.textfield.TextInputLayout>
-
-                <Spinner
-                    android:id="@+id/spinnerCountry"
-                    android:layout_width="match_parent"
-                    android:layout_height="60dp"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginTop="10dp"
-                    android:entries="@array/country_array"
-                    android:gravity="center_vertical"
-                    android:textColor="@color/textcolor" />
 
 
                 <CheckBox

@@ -4,11 +4,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Fragment.Projects_Fragment">
+    <include layout="@layout/toolbar"/>
 
     <ListView
         android:id="@+id/listViewMyProjects"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginTop="55dp"
         android:background="@color/lightgrey" />
 
 </FrameLayout>

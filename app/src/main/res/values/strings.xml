@@ -8,29 +8,7 @@
     <string name="login">Login</string>
     <string name="signup_now">SIGNUP NOW</string>
 
-
-    <string-array name="country_array">
-        <item>India</item>
-        <item>Pakisthan</item>
-        <item>Sri Lanka</item>
-    </string-array>
-    <string-array name="city_india">
-        <item>Mumbai</item>
-        <item>Chennai</item>
-        <item>Kolkata</item>
-        <item>Bangalore</item>
-    </string-array>
-    <string-array name="city_pakisthan">
-        <item>Karachi</item>
-        <item>Lahore</item>
-        <item>Faisalabad</item>
-        <item>Rawalpindi</item>
-    </string-array>
-    <string-array name="city_srilanka">
-        <item>Colombo</item>
-        <item>Dehiwala-Mount Lavinia</item>
-        <item>Moratuwa</item>
-        <item>Kotte</item>
-    </string-array>
+    <string name="OpenDrawer">Open navigation drawer</string>
+    <string name="CloseDrawer">Close navigation drawer</string>
 
 </resources>

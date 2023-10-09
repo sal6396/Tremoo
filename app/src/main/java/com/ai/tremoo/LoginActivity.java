@@ -1,183 +1,154 @@
 package com.ai.tremoo;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
+import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-public class LoginActivity extends AppCompatActivity {
-//    implements View.OnClickListener
+import com.ai.tremoo.Models.Login_Response;
 
-    private EditText edEmail, edPassword;
-    private Button btn;
-    private TextView tv;
-    private ProgressDialog progressDialog;
+import java.io.IOException;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
+public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
+
+    private EditText email, password;
     private CheckBox saveLoginCheckBox;
-
-    private SharedPreferences loginPreferences;
-    private SharedPreferences.Editor loginPrefsEditor;
-    private boolean saveLogin;
-    private String email, password;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        tv = findViewById(R.id.textViewNewUser);
-        btn = findViewById(R.id.buttonLogin);
-        progressDialog = new ProgressDialog(this);
-        progressDialog.setMessage("Please Wait...");
-        progressDialog.setCancelable(false);
-
-        edEmail = findViewById(R.id.editTextTextLoginUsername);
-        edPassword = findViewById(R.id.editTextTextLoginPassword);
+        email = findViewById(R.id.editTextTextLoginUsername);
+        password = findViewById(R.id.editTextTextLoginPassword);
         saveLoginCheckBox = findViewById(R.id.saveLoginCheckBox);
-//        btn.setOnClickListener(this);
+        Button loginButton = findViewById(R.id.buttonLogin);
+        TextView newUser = findViewById(R.id.textViewNewUser);
 
-        tv.setOnClickListener(new View.OnClickListener() {
+        loginButton.setOnClickListener(this);
+        newUser.setOnClickListener(this);
+
+        newUser.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(LoginActivity.this, RegisterActivity.class));
+                Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
+                startActivity(intent);
             }
         });
 
-        btn.setOnClickListener(new View.OnClickListener() {
+        SharedPreferences sharedPreferences = getSharedPreferences("authPrefs", MODE_PRIVATE);
+        boolean isLoggedIn = sharedPreferences.getBoolean("isLoggedIn", false);
+//
+//        if (isLoggedIn) {
+//            // User is already logged in, navigate to the main screen
+//            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+//            startActivity(intent);
+//            finish(); // Prevent going back to LoginActivity when pressing back button
+//        }
+    }
+
+    @Override
+    public void onClick(View view) {
+        int viewId = view.getId();
+
+        if (viewId == R.id.buttonLogin) {
+            userLogin();
+        } else if (viewId == R.id.textViewNewUser) {
+            // Handle new user registration
+            // Add your registration logic here
+        }
+    }
+
+    private void userLogin() {
+        String userEmail = email.getText().toString().trim();
+        String userPassword = password.getText().toString().trim();
+
+        if (userEmail.isEmpty() || !Patterns.EMAIL_ADDRESS.matcher(userEmail).matches()) {
+            email.setError("Please enter a valid Email");
+            email.requestFocus();
+            return;
+        }
+
+        if (userPassword.isEmpty()) {
+            password.setError("Please enter your Password");
+            password.requestFocus();
+            return;
+        }
+
+        Call<Login_Response> call = RequestHandler.getInstance().getApi().login(userEmail, userPassword);
+
+        call.enqueue(new Callback<Login_Response>() {
             @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                               startActivity(intent);
+            public void onResponse(Call<Login_Response> call, Response<Login_Response> response) {
+                // Log the request URL
+                Log.d("Retrofit", "Request URL: " + call.request().url());
+
+                // Log the response code
+                Log.d("Retrofit", "Response : " + response);
+
+                if (response.isSuccessful() && response.body() != null) {
+                    Login_Response loginResponse = response.body();
+                    String message = loginResponse.getMessage();
+                    Log.d("Retrofit", "Login successful: " + message);
+
+                    Login_Response.User user = loginResponse.getData().getUser(); // Get the User object from Data
+                    if (user != null) {
+                        // Login successful, store the token
+                        String token = loginResponse.getData().getToken(); // Get the token from Data
+                        saveToken(token);
+                        Log.d("Retrofit", "Login successful, Token: " + token);
+                        Toast.makeText(LoginActivity.this, "Login successful", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        startActivity(intent);
+                    } else {
+                        // Handle unsuccessful login
+                        Toast.makeText(LoginActivity.this, message, Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    // Handle unsuccessful response
+                    Toast.makeText(LoginActivity.this, "Login failed. Please try again.", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Login_Response> call, Throwable t) {
+                // Log the request URL
+                Log.d("Retrofit", "Request URL: " + call.request().url());
+
+                // Handle failure
+                Log.e("Retrofit", "Login request failed: " + t.getMessage());
+                if (t instanceof IOException) {
+                    Toast.makeText(LoginActivity.this, "Network error occurred. Please check your internet connection and try again.", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(LoginActivity.this, "Login failed. Please try again.", Toast.LENGTH_SHORT).show();
+                }
             }
         });
+    }
 
-//        loginPreferences = getSharedPreferences("loginPrefs", MODE_PRIVATE);
-//        loginPrefsEditor = loginPreferences.edit();
-//
-//        saveLogin = loginPreferences.getBoolean("saveLogin", false);
-//        if (saveLogin) {
-//            edEmail.setText(loginPreferences.getString("email", ""));
-//            edPassword.setText(loginPreferences.getString("password", ""));
-//            saveLoginCheckBox.setChecked(true);
-//        }
-//
-//        if (saveLogin) {
-//            String savedEmail = loginPreferences.getString("email", "");
-//            String savedPassword = loginPreferences.getString("password", "");
-//
-//            if (!savedEmail.isEmpty() && !savedPassword.isEmpty()) {
-//                // Credentials are saved, automatically log in
-//                edEmail.setText(savedEmail);
-//                edPassword.setText(savedPassword);
-//                userLogin(); // Call your login method here
-//            }
-//        }
+    private void saveToken(String token) {
+        // Store the token in SharedPreferences
+        SharedPreferences sharedPreferences = getSharedPreferences("authPrefs", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("token", token);
+        editor.putBoolean("isLoggedIn", true); // Save login status
+        editor.apply();
+        Log.d("Retrofit", "Login successful, Token: " + token);
 
     }
 
-//    @Override
-//    public void onClick(View view) {
-//        if (view == btn) {
-//            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-//            imm.hideSoftInputFromWindow(edEmail.getWindowToken(), 0);
-//
-//            email = edEmail.getText().toString().trim();
-//            password = edPassword.getText().toString().trim();
-//
-//            if (saveLoginCheckBox.isChecked()) {
-//                saveLoginCredentials(email, password);
-//            } else {
-//                clearLoginCredentials();
-//            }
-//
-//            userLogin();
-//        }
-//    }
-
-//    private void saveLoginCredentials(String email, String password) {
-//        loginPrefsEditor.putBoolean("saveLogin", true);
-//        loginPrefsEditor.putString("email", email);
-//        loginPrefsEditor.putString("password", password);
-//        loginPrefsEditor.apply();
-//    }
-//
-//    private void clearLoginCredentials() {
-//        loginPrefsEditor.clear();
-//        loginPrefsEditor.apply();
-//    }
-//
-//    private void userLogin() {
-//        final String email = edEmail.getText().toString().trim();
-//        final String password = edPassword.getText().toString().trim();
-//
-//        if (email.isEmpty() || password.isEmpty()) {
-//            Toast.makeText(this, "Please fill in all fields.", Toast.LENGTH_SHORT).show();
-//            return;
-//        }
-//
-//
-//        progressDialog.show();
-//
-//        StringRequest stringRequest = new StringRequest(Request.Method.POST, Constants.URL_LOGIN,
-//                new Response.Listener<String>() {
-//                    @Override
-//                    public void onResponse(String response) {
-//                        progressDialog.dismiss();
-//                        Log.d("Response", response);
-//
-//                        try {
-//                            JSONObject jsonObject = new JSONObject(response);
-//                            Log.d("Server Response", jsonObject.toString());
-//
-//                            if (jsonObject.getBoolean("success")) {
-//                                JSONObject userObj = jsonObject.getJSONObject("data");
-//
-//                                // Extract user data
-//                                int id = userObj.getInt("id");
-//                                String userEmail = userObj.getString("email");
-//
-//                                // Store user data in Shared Preferences
-//                                SharedPrefManager.getInstance(LoginActivity.this)
-//                                        .userLogin(id, userEmail);
-//
-//                                // Start the MainActivity
-//                                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-//                                startActivity(intent);
-//                                finish();
-//                            } else {
-//                                Toast.makeText(LoginActivity.this, jsonObject.getString("message"), Toast.LENGTH_SHORT).show();
-//                            }
-//
-//                        } catch (JSONException e) {
-//                            e.printStackTrace();
-//                            Toast.makeText(LoginActivity.this, "Error occurred: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-//                        }
-//                    }
-//                },
-//                new Response.ErrorListener() {
-//                    @Override
-//                    public void onErrorResponse(VolleyError error) {
-//                        progressDialog.dismiss();
-//                        Toast.makeText(LoginActivity.this, "Error occurred: " + error.getMessage(), Toast.LENGTH_SHORT).show();
-//                    }
-//                }) {
-//            @Nullable
-//            @Override
-//            protected Map<String, String> getParams() {
-//                Map<String, String> params = new HashMap<>();
-//                params.put("email", email);
-//                params.put("password", password);
-//                return params;
-//            }
-//        };
-//
-//        // Add the request to the RequestQueue
-//        RequestHandler.getInstance(this).addToRequestQueue(stringRequest);
-//    }
 }

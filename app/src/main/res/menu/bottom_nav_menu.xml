@@ -1,26 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
 
 
-    <item
-        android:id="@+id/home"
-        android:title="Home"
-        android:iconTint="@color/white"
-        android:icon="@drawable/baseline_home_24"/>
+    <group android:checkableBehavior="single">
 
-    <item
-        android:id="@+id/project"
-        android:title="Projects"
-        android:iconTint="@color/white"
-        android:icon="@drawable/baseline_folder_24"
-        />
+        <item
+            android:id="@+id/dashboard"
+            android:title="Dashboard"
+            android:iconTint="@color/white"
+            android:icon="@drawable/baseline_home_24"/>
 
 
-    <item
-        android:id="@+id/account"
-        android:title="Account"
-        android:iconTint="@color/white"
-        android:icon="@drawable/baseline_person_24"/>
+        <item
+            android:id="@+id/profile"
+            android:title="User Profile"
+            android:iconTint="@color/white"
+            android:icon="@drawable/baseline_person_24"/>
+
+        <item
+            android:id="@+id/projectDesk"
+            android:title="Project Desk"
+            android:iconTint="@color/white"
+            android:icon="@drawable/directory"
+            />
+
+        <item
+            android:id="@+id/myProject"
+            android:title="My Project"
+            android:iconTint="@color/white"
+            android:icon="@drawable/baseline_folder_24"
+            />
+
+        <item
+            android:id="@+id/payment"
+            android:title="Payments"
+            android:iconTint="@color/white"
+            android:icon="@drawable/baseline_payments_24"
+            />
+
+
+    </group>
+
+    <item android:title="Other">
+
+        <menu>
+
+            <item
+                android:id="@+id/setting"
+                android:title="Setting"
+                android:iconTint="@color/white"
+                android:icon="@drawable/baseline_settings_24"/>
+
+            <item
+                android:id="@+id/logOut"
+                android:title="Logout"
+                android:iconTint="@color/white"
+                android:icon="@drawable/baseline_logout_24"
+                />
+
+        </menu>
+
+    </item>
+
+
 
 
 </menu>

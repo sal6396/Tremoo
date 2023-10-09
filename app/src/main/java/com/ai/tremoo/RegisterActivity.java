@@ -1,42 +1,42 @@
 package com.ai.tremoo;
 
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
-
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import com.ai.tremoo.Models.Register_Response;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.google.android.material.snackbar.Snackbar;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.HashMap;
-import java.util.Map;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class RegisterActivity extends AppCompatActivity {
 
-    private EditText edname, edemail, edpassword, edconfirm, edphone, edEduc, edCity;
+    private EditText edname, edemail, edpassword, edconfirm, edphone, edgender, edCity;
     private Button btn;
-    private Spinner spinnerCountry;
-
-    private Snackbar snackbar;
+    CheckBox checkBox1, checkBox2;
+    Spinner spinnerCountry, spinnerEducation;
+    List<String> countries = CountryList.getCountryNames();
+    List<String> education = Arrays.asList("Level of Education", "High School", "College", "Graduate", "Post-Graduate");
     private ProgressDialog progressDialog;
 
+    @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,22 +48,67 @@ public class RegisterActivity extends AppCompatActivity {
         edemail = findViewById(R.id.editTextEmail);
         btn = findViewById(R.id.buttonReg);
         edphone = findViewById(R.id.editTextTextPhoneNo);
-        edEduc = findViewById(R.id.editTextTextEducation);
+        edgender = findViewById(R.id.editTextTextGender);
         edCity = findViewById(R.id.editTextTextCity);
+        checkBox1 = findViewById(R.id.checkBox);
+        checkBox2 = findViewById(R.id.checkBox2);
         spinnerCountry = findViewById(R.id.spinnerCountry);
+        spinnerEducation = findViewById(R.id.spinnerEducation);
 
         progressDialog = new ProgressDialog(this);
         progressDialog.setCancelable(false);
 
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-                R.array.country_array, android.R.layout.simple_spinner_item);
+        ArrayAdapter<String> adapter1 = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, education);
+        spinnerEducation.setAdapter(adapter1);
+
+        spinnerEducation.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                String selectedEducation = (String) parentView.getItemAtPosition(position);
+                // Store the selected education or perform any action based on the selection
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parentView) {
+                // Do nothing here
+            }
+        });
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, countries);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerCountry.setAdapter(adapter);
+
+        spinnerCountry.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                String selectedCountry = (String) parentView.getItemAtPosition(position);
+                // Store the selected country or perform any action based on the selection
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parentView) {
+                // Do nothing here
+            }
+        });
 
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 registerUser();
+            }
+        });
+
+        checkBox1.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                // Handle CheckBox 1 state change
+            }
+        });
+
+        checkBox2.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                // Handle CheckBox 2 state change
             }
         });
     }
@@ -74,155 +119,76 @@ public class RegisterActivity extends AppCompatActivity {
         String password = edpassword.getText().toString().trim();
         String confirm = edconfirm.getText().toString().trim();
         String phoneNo = edphone.getText().toString().trim();
-        String country = spinnerCountry.getSelectedItem().toString().trim();
-        String education = edEduc.getText().toString().trim();
+        String gender = edgender.getText().toString().trim();
         String city = edCity.getText().toString().trim();
+        String selectedCountry = spinnerCountry.getSelectedItem().toString();
+        String selectedEducation = spinnerEducation.getSelectedItem().toString();
+        int checkBox1Value = checkBox1.isChecked() ? 1 : 0;
+        int checkBox2Value = checkBox2.isChecked() ? 1 : 0;
 
-        if (TextUtils.isEmpty(name)) {
-            edname.setError("Username is required");
-            edname.requestFocus();
-            return;
-        }
+        if (TextUtils.isEmpty(name) || TextUtils.isEmpty(email) || TextUtils.isEmpty(password) ||
+                TextUtils.isEmpty(confirm) || TextUtils.isEmpty(phoneNo) || TextUtils.isEmpty(gender)  || TextUtils.isEmpty(selectedCountry)|| TextUtils.isEmpty(selectedEducation)||
+                TextUtils.isEmpty(city)) {
 
-        if (TextUtils.isEmpty(email)) {
-            edemail.setError("Email is required");
-            edemail.requestFocus();
-            return;
-        }
-
-        if (!isValidPassword(password)) {
-            edpassword.setError("Password must be at least 8 characters long and contain letters, digits, and special characters");
-            edpassword.requestFocus();
+            Toast.makeText(this, "Please fill in all the fields", Toast.LENGTH_SHORT).show();
             return;
         }
 
         if (!password.equals(confirm)) {
-            edconfirm.setError("Passwords do not match");
-            edconfirm.requestFocus();
+            Toast.makeText(this, "Passwords do not match", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        if (TextUtils.isEmpty(phoneNo)) {
-            edphone.setError("Phone Number is required");
-            edphone.requestFocus();
-            return;
-        }
-
-        if (TextUtils.isEmpty(country)) {
-            showSnackBar("Country is required");
-            return;
-        } else {
-            hideSnackBar(); // Clear the error if the field is not empty
-        }
-
-        if (TextUtils.isEmpty(education)) {
-            edEduc.setError("Level of Education is required");
-            edEduc.requestFocus();
-            return;
-        }
-        if (TextUtils.isEmpty(city)) {
-            edCity.setError("City is required");
-            edCity.requestFocus();
-            return;
-        }
-
-        progressDialog.setMessage("Registering User....");
+        progressDialog.setMessage("Registering User...");
         progressDialog.show();
 
-        // Make a POST request to the API to register the user
-        StringRequest stringRequest = new StringRequest(Request.Method.POST,
-                Constants.URL_REGISTER,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        progressDialog.dismiss();
+        Call<Register_Response> call = RequestHandler.getInstance().getApi().register(
+                name, email, password, confirm, phoneNo,gender, city, selectedCountry, selectedEducation,
+                String.valueOf(checkBox1Value), String.valueOf(checkBox2Value));
 
-                        // Print the response to the logcat
-                        Log.d("Response", response);
+        call.enqueue(new Callback<Register_Response>() {
+            @Override
+            public void onResponse(Call<Register_Response> call, Response<Register_Response> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    Register_Response registerResponse = response.body();
+                    if (registerResponse != null && registerResponse.isSuccess()) {
+                        Intent intent = new Intent(RegisterActivity.this, MainActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        startActivity(intent);
+                        Toast.makeText(RegisterActivity.this, registerResponse.getMessage(), Toast.LENGTH_SHORT).show();
 
+                    } else {
+                        // Handle unsuccessful response here
+                        String errorMessage = "Registration failed. Please try again.";
+                        if (registerResponse != null) {
+                            errorMessage = registerResponse.getMessage();
+                        }
+                        Log.e("Retrofit", "Response Error: " + errorMessage);
+                        Toast.makeText(RegisterActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
+                    }
+
+                } else {
+                    // Handle unsuccessful response here
+                    String errorMessage = "Registration failed. Please try again.";
+                    if (response.errorBody() != null) {
                         try {
-                            JSONObject jsonObject = new JSONObject(response);
-
-                            // Check if the response contains any specific error fields
-                            if (jsonObject.has("status_code")) {
-                                int statusCode = jsonObject.getInt("status_code");
-                                if (statusCode == 409) {
-                                    String message = jsonObject.getString("message");
-                                    edemail.setError(message);
-                                    edemail.requestFocus();
-                                } else {
-                                    String message = jsonObject.getString("message");
-                                    showSnackBar(message);
-                                }
-                            } else {
-                                // Assuming a successful response since there's no specific error indication
-                                Toast.makeText(RegisterActivity.this, "User registration successful!", Toast.LENGTH_SHORT).show();
-                                startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
-                                finish();
-                            }
-                        } catch (JSONException e) {
+                            errorMessage = response.errorBody().string();
+                        } catch (IOException e) {
                             e.printStackTrace();
-                            showSnackBar("Error parsing response from the server");
                         }
                     }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        progressDialog.dismiss();
-                        showSnackBar("Error: " + error.getMessage());
-                    }
-                }) {
+                    Log.e("Retrofit", "Response Error: " + errorMessage);
+                    Toast.makeText(RegisterActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
+                }
+                progressDialog.dismiss();
+            }
+
             @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String, String> params = new HashMap<>();
-                params.put("name", name);
-                params.put("email", email);
-                params.put("password", password);
-                params.put("phoneNo", phoneNo);
-                params.put("country", country);
-                params.put("education", education);
-                params.put("city", city);
-                return params;
+            public void onFailure(Call<Register_Response> call, Throwable t) {
+                progressDialog.dismiss();
+                Toast.makeText(RegisterActivity.this, "Registration failed. Please try again.", Toast.LENGTH_SHORT).show();
             }
-        };
-
-        // Add the request to the RequestQueue
-        RequestHandler.getInstance(this).addToRequestQueue(stringRequest);
-    }
-
-    private void hideSnackBar() {
-        if (snackbar != null && snackbar.isShown()) {
-            snackbar.dismiss();
-        }
-    }
-
-    private void showSnackBar(String message) {
-        if (snackbar != null && snackbar.isShown()) {
-            snackbar.dismiss();
-        }
-        snackbar = Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_SHORT);
-        snackbar.show();
-    }
-
-    private boolean isValidPassword(String password) {
-        // Implement your password validation logic here
-        // For example, you can use the isvalid method you provided in your original code
-        // or you can use regular expressions to define password requirements.
-        // The current implementation is a basic check for password length and containing at least one letter, one digit, and one special character.
-
-        int f1 = 0, f2 = 0, f3 = 0;
-        for (char c : password.toCharArray()) {
-            if (Character.isLetter(c)) {
-                f1 = 1;
-            } else if (Character.isDigit(c)) {
-                f2 = 1;
-            } else if (c >= 33 && c <= 46 || c == 64) {
-                f3 = 1;
-            }
-        }
-
-        return password.length() >= 8 && f1 == 1 && f2 == 1 && f3 == 1;
+        });
     }
 }
 

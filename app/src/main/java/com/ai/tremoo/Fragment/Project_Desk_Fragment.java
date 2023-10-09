@@ -1,9 +1,13 @@
 package com.ai.tremoo.Fragment;
 
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.os.Bundle;
 
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.util.Log;
@@ -12,7 +16,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+
+import androidx.appcompat.widget.Toolbar;
 
 import com.ai.tremoo.MainActivity;
 import com.android.volley.Request;
@@ -37,13 +46,36 @@ public class Project_Desk_Fragment extends Fragment {
     private List<ProjectModel> projectList;
     private ProjectAdapter adapter;
     private ProgressDialog progressDialog;
-    ImageButton backDesk;
+    private ImageView backButton;
+    private RelativeLayout toolbar;
+    private TextView titleTextView;
 
+
+
+
+    @SuppressLint("MissingInflatedId")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_project__desk_, container, false);
+
+        toolbar = view.findViewById(R.id.toolbar);
+        titleTextView = view.findViewById(R.id.title);
+        backButton = view.findViewById(R.id.back);
+        backButton.setVisibility(View.VISIBLE);
+
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onBackPressed(); // Handle back button click here
+            }
+        });
+        String dynamicTitle = "Projects"; // Replace this with your dynamic title
+        titleTextView.setText(dynamicTitle);
+
+
+        // Set the ActionBar title
 
         projectList = new ArrayList<>();
         adapter = new ProjectAdapter(requireContext(), projectList);
@@ -53,10 +85,6 @@ public class Project_Desk_Fragment extends Fragment {
 
         progressDialog = new ProgressDialog(requireContext());
         progressDialog.setCancelable(false);
-        backDesk = view.findViewById(R.id.backDesk);
-
-
-
 
         // Make an API request to fetch project data
         fetchProjectData();
@@ -82,16 +110,6 @@ public class Project_Desk_Fragment extends Fragment {
                 transaction.commit();
             }
         });
-
-        backDesk.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // Navigate back to the previous fragment using FragmentManager
-                getParentFragmentManager().popBackStack();
-            }
-        });
-
-
 
         return view;
     }
@@ -153,6 +171,12 @@ public class Project_Desk_Fragment extends Fragment {
                 }
         );
         // Add the request to the Volley request queue
-        RequestHandler.getInstance(requireContext()).addToRequestQueue(jsonObjectRequest);
+//        RequestHandler.getInstance(requireContext()).addToRequestQueue(jsonObjectRequest);
+    }
+    private void onBackPressed() {
+        FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+        fragmentManager.beginTransaction()
+                .replace(R.id.frameLayout, new Home_Fragment())
+                .commit();
     }
 }

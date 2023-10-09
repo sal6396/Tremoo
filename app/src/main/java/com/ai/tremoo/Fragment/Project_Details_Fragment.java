@@ -33,6 +33,7 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.ai.tremoo.MainActivity;
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
@@ -84,13 +85,14 @@ public class Project_Details_Fragment extends Fragment  {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_project__details_, container, false);
 
+
         Bundle bundle = getArguments();
         if (bundle != null) {
             String projectId = bundle.getString("projectId");
             fetchProjectDetails(projectId); // Pass the projectId to fetch the specific project
         }
 
-        backDetails = rootView.findViewById(R.id.backDetails);
+
         submitData = rootView.findViewById(R.id.dataSubmission);
         detailsLayout = rootView.findViewById(R.id.detailsLayout);
         itemNameTextView = rootView.findViewById(R.id.itemNameTextView);
@@ -113,18 +115,18 @@ public class Project_Details_Fragment extends Fragment  {
             }
         });
 
-        backDetails.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // Create an instance of Submit_Data_Fragment
-                Project_Desk_Fragment projectDeskFragment = new Project_Desk_Fragment();
-
-                FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
-                transaction.replace(R.id.frameLayout, projectDeskFragment); // Use the instance
-                transaction.addToBackStack(null); // Optional: Adds to back stack
-                transaction.commit();
-            }
-        });
+//        backDetails.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                // Create an instance of Submit_Data_Fragment
+//                Project_Desk_Fragment projectDeskFragment = new Project_Desk_Fragment();
+//
+//                FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
+//                transaction.replace(R.id.frameLayout, projectDeskFragment); // Use the instance
+//                transaction.addToBackStack(null); // Optional: Adds to back stack
+//                transaction.commit();
+//            }
+//        });
 
         return rootView;
     }
@@ -190,6 +192,6 @@ public class Project_Details_Fragment extends Fragment  {
         );
 
         // Add the request to the Volley request queue
-        RequestHandler.getInstance(requireContext()).addToRequestQueue(jsonObjectRequest);
+//        RequestHandler.getInstance(requireContext()).addToRequestQueue(jsonObjectRequest);
     }
 }

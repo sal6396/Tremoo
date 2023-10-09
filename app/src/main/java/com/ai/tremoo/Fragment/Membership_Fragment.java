@@ -14,14 +14,6 @@ import com.ai.tremoo.R;
 
 public class Membership_Fragment extends Fragment {
 
-    TextView tvMember;
-    boolean isFirstTime = true;
-
-    private void changeTextViewColor(TextView button) {
-        // Change the background color of the button
-        int backgroundColor = R.color.textcolor;
-        button.setBackgroundColor(getResources().getColor(backgroundColor));
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -29,13 +21,7 @@ public class Membership_Fragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_membership_, container, false);
 
-        tvMember = view.findViewById(R.id.memberShip);
 
-        if (isFirstTime) {
-            // Change the appearance of the TextView on the first time
-            changeTextViewColor(tvMember);
-            isFirstTime = false;
-        }
         return view;
     }
 }

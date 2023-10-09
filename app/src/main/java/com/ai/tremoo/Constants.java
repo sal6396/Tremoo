@@ -1,7 +1,7 @@
 package com.ai.tremoo;
 
 public class Constants {
-    public static final String ROOT_URL ="https://tremo.codepanacea.com/api/";
+    public static final String ROOT_URL ="https://demo.tremoo.com/api/";
     public static final String URL_REGISTER = ROOT_URL + "register";
     public static final String URL_LOGIN = ROOT_URL + "login";
     public static final String URL_GET_PROJECTS = ROOT_URL + "projects";

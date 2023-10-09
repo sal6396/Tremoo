@@ -57,16 +57,22 @@ public class SharedPrefManager {
     }
 
     public boolean logout() {
+        // Get SharedPreferences editor
         SharedPreferences sharedPreferences = ctx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
+
+        // Clear all saved data
         editor.clear();
         editor.apply();
+
         // Redirect user to LoginActivity after logout
         Intent intent = new Intent(ctx, LoginActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         ctx.startActivity(intent);
+
         return true;
     }
+
 
     public String getUsername() {
         SharedPreferences sharedPreferences = ctx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);

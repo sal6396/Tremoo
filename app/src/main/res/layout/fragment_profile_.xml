@@ -5,35 +5,14 @@
     android:layout_height="match_parent"
     android:background="@color/white"
     tools:context=".Fragment.Profile_Fragment">
+    <include layout="@layout/toolbar"/>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginTop="55dp"
         android:orientation="vertical">
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/cardProfile"
-            android:layout_width="match_parent"
-            android:layout_height="60dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@color/green"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/profile"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:gravity="center"
-                    android:text="Profile"
-                    android:textSize="30sp"
-                    android:textColor="@color/white" />
-
-            </LinearLayout>
-
-        </androidx.cardview.widget.CardView>
 
         <ScrollView
             android:layout_width="match_parent"
@@ -221,12 +200,6 @@
 
                     </com.google.android.material.textfield.TextInputLayout>
 
-                    <TextView
-                        android:id="@+id/setting"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Setting"
-                        android:textColor="@color/black" />
 
                 </LinearLayout>
 
