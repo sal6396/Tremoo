@@ -6,7 +6,6 @@
     tools:context=".Fragment.Project_Desk_Fragment">
     <include layout="@layout/toolbar"/>
 
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -20,6 +19,6 @@
             android:layout_height="match_parent"
             android:background="@color/lightgrey" />
 
-    </LinearLayout>
 
+    </LinearLayout>
 </FrameLayout>

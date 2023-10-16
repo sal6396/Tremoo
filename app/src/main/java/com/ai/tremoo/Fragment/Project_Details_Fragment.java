@@ -1,16 +1,19 @@
 package com.ai.tremoo.Fragment;
 
 import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.ai.tremoo.Models.Project;
@@ -22,13 +25,16 @@ public class Project_Details_Fragment extends Fragment  {
 
 
 
-    // UI elements
+    private ImageView backButton;
+    private RelativeLayout toolbar;
+    private TextView titleTextView;
 
     private LinearLayout detailsLayout;
     private TextView itemNameTextView;
-    private TextView puId, projectCategory, projectDescription,  projectExpiryDate, projectActive;
+    private TextView projectActive;
     Button submitData;
-    ImageButton backDetails;
+
+    private ProgressDialog progressDialog;
 
 
     // Data
@@ -41,22 +47,57 @@ public class Project_Details_Fragment extends Fragment  {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_project__details_, container, false);
 
+        progressDialog = new ProgressDialog(requireContext());
+        progressDialog.setCancelable(false);
+
 
         Bundle bundle = getArguments();
-//        if (bundle != null) {
-//            String projectId = bundle.getString("projectId");
-//            fetchProjectDetails(projectId); // Pass the projectId to fetch the specific project
-//        }
+        showProgressDialog();
+        if (bundle != null) {
+            String puid = bundle.getString("puid", "");
+            String details = bundle.getString("details", "");
+            String name = bundle.getString("name", "");
+            String expiryDate = bundle.getString("expiry_date", "");
+
+            TextView puidTextView = rootView.findViewById(R.id.projectId);
+            TextView detailsTextView = rootView.findViewById(R.id.projectDetails);
+            TextView nameTextView = rootView.findViewById(R.id.categoryName);
+            TextView expiryDateTextView = rootView.findViewById(R.id.projectExpiry);
+
+            puidTextView.setText(puid);
+            detailsTextView.setText(details);
+            nameTextView.setText(name);
+            expiryDateTextView.setText(expiryDate);
+            hideProgressDialog();
+        }
+
 
 
         submitData = rootView.findViewById(R.id.dataSubmission);
         detailsLayout = rootView.findViewById(R.id.detailsLayout);
         itemNameTextView = rootView.findViewById(R.id.itemNameTextView);
-        puId = rootView.findViewById(R.id.projectId);
-        projectCategory = rootView.findViewById(R.id.categoryName);
-        projectDescription = rootView.findViewById(R.id.projectDetails);
-        projectExpiryDate = rootView.findViewById(R.id.projectExpiry);
+//        puId = rootView.findViewById(R.id.projectId);
+//        projectCategory = rootView.findViewById(R.id.categoryName);
+//        projectDescription = rootView.findViewById(R.id.projectDetails);
+//        projectExpiryDate = rootView.findViewById(R.id.projectExpiry);
         projectActive = rootView.findViewById(R.id.projectActive);
+
+
+
+        toolbar = rootView.findViewById(R.id.toolbar);
+        titleTextView = rootView.findViewById(R.id.title);
+        backButton = rootView.findViewById(R.id.back);
+        backButton.setVisibility(View.VISIBLE);
+
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onBackPressed(); // Handle back button click here
+            }
+        });
+        String dynamicTitle = "Project Details"; // Replace this with your dynamic title
+        titleTextView.setText(dynamicTitle);
+
 
         submitData.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -71,83 +112,26 @@ public class Project_Details_Fragment extends Fragment  {
             }
         });
 
-//        backDetails.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                // Create an instance of Submit_Data_Fragment
-//                Project_Desk_Fragment projectDeskFragment = new Project_Desk_Fragment();
-//
-//                FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
-//                transaction.replace(R.id.frameLayout, projectDeskFragment); // Use the instance
-//                transaction.addToBackStack(null); // Optional: Adds to back stack
-//                transaction.commit();
-//            }
-//        });
-
         return rootView;
     }
 
-//    private void fetchProjectDetails(String projectID) {
-//        // Create a JsonObjectRequest to get the project data from the server
-//        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
-//                Request.Method.GET,
-//
-//                null,
-//                new Response.Listener<JSONObject>() {
-//                    @Override
-//                    public void onResponse(JSONObject response) {
-//                        Log.d("VolleyResponse", "Response JSON: " + response.toString());
-//
-//                        try {
-//                            // Parse the JSON array of projects
-//                            JSONArray projectsArray = response.getJSONArray("data");
-//
-//
-//                            // Iterate through the projects to find the one with matching project ID
-//                            for (int i = 0; i < projectsArray.length(); i++) {
-//                                JSONObject projectObject = projectsArray.getJSONObject(i);
-//                                String projectId = projectObject.getString("puid");
-//
-//                                if (projectId.equals(projectID)) {
-//                                    // Found the project with matching project ID
-//                                    String projectDetails = projectObject.getString("details");
-//                                    String projectStatus = projectObject.getString("status");
-//                                    JSONObject categoryObject = projectObject.getJSONObject("category");
-//                                    String categoryName = categoryObject.getString("name");
-//                                    String projectExpiry = projectObject.getString("expiry_date");
-//
-//                                    // Set the data to your TextViews directly
-//                                    puId.setText(projectId);
-//                                    projectActive.setText(projectStatus);
-//                                    projectCategory.setText(categoryName);
-//                                    projectExpiryDate.setText(projectExpiry);
-//                                    projectDescription.setText(projectDetails);
-//
-//                                }
-//                            }
-//                        } catch (JSONException e) {
-//                            e.printStackTrace();
-//                        }
-//
-//                    }
-//                },
-//                new Response.ErrorListener() {
-//                    @Override
-//                    public void onErrorResponse(VolleyError error) {
-//                        // Handle errors, display an error message or take appropriate action
-//                        Log.e("Volley Error", "Error fetching data: " + error.getMessage());
-//                        // Display an error message to the user if needed
-//                        requireActivity().runOnUiThread(new Runnable() {
-//                            @Override
-//                            public void run() {
-//                                Toast.makeText(requireContext(), "Error fetching project details.", Toast.LENGTH_SHORT).show();
-//                            }
-//                        });
-//                    }
-//                }
-//        );
-//
-//        // Add the request to the Volley request queue
-////        RequestHandler.getInstance(requireContext()).addToRequestQueue(jsonObjectRequest);
-//    }
+    private void showProgressDialog() {
+        if (progressDialog != null && !progressDialog.isShowing()) {
+            progressDialog.show();
+        }
+    }
+
+    private void hideProgressDialog() {
+        if (progressDialog != null && progressDialog.isShowing()) {
+            progressDialog.dismiss();
+        }
+    }
+
+
+    private void onBackPressed() {
+        FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+        fragmentManager.beginTransaction()
+                .replace(R.id.frameLayout, new Project_Desk_Fragment())
+                .commit();
+    }
 }

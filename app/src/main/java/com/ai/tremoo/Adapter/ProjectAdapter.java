@@ -13,10 +13,10 @@ import com.ai.tremoo.R;
 import java.util.List;
 
 public class ProjectAdapter extends BaseAdapter {
-    private List<ProjectsResponse> projects;
+    private List<ProjectsResponse.Project> projects;
     private LayoutInflater inflater;
 
-    public ProjectAdapter(Context context, List<ProjectsResponse> projects) {
+    public ProjectAdapter(Context context, List<ProjectsResponse.Project> projects) {
         this.projects = projects;
         inflater = LayoutInflater.from(context);
     }
@@ -36,7 +36,6 @@ public class ProjectAdapter extends BaseAdapter {
         return position;
     }
 
-
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         if (convertView == null) {
@@ -49,15 +48,23 @@ public class ProjectAdapter extends BaseAdapter {
         TextView projectCategoryTextView = convertView.findViewById(R.id.line_d);
         TextView projectStatusTextView = convertView.findViewById(R.id.line_f);
 
-        ProjectsResponse project = projects.get(position);
+        ProjectsResponse.Project project = projects.get(position);
 
-//        projectIdTextView.setText(project.getProjectId());
-//        projectNameTextView.setText(project.getProjectName());
-//        projectStatusTextView.setText(project.getProjectStatus());
-//        projectCategoryTextView.setText(project.getProjectCategory());
-//        projectProjectExpiryTextView.setText(project.getProjectExpiry());
-
+        projectIdTextView.setText(project.getPuid());
+        projectNameTextView.setText(project.getTitle());
+        projectStatusTextView.setText(getStatusText(project.getStatus()));
+        projectCategoryTextView.setText(project.getCategory().getName());
+        projectProjectExpiryTextView.setText(project.getExpiryDate());
 
         return convertView;
     }
+
+    private String getStatusText(int status) {
+        if (status == 1) {
+            return "Active";
+        } else {
+            return "Inactive"; // You can customize this for other status values
+        }
+    }
+
 }

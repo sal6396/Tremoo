@@ -1,6 +1,7 @@
 package com.ai.tremoo;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -28,6 +29,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private EditText email, password;
     private CheckBox saveLoginCheckBox;
     private ProgressDialog progressDialog;
+    private Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +47,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         loginButton.setOnClickListener(this);
         newUser.setOnClickListener(this);
+
+        context = this;
 
         newUser.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -117,7 +121,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     if (user != null) {
                         // Login successful, store the token
                         String token = loginResponse.getData().getToken(); // Get the token from Data
-                        saveToken(token);
+                        SharedPrefManager.getInstance(context).saveToken(token);
                         Log.d("Retrofit", "Login successful, Token: " + token);
                         Toast.makeText(LoginActivity.this, "Login successful", Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
@@ -151,15 +155,15 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         });
     }
 
-    private void saveToken(String token) {
-        // Store the token in SharedPreferences
-        SharedPreferences sharedPreferences = getSharedPreferences("authPrefs", MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString("token", token);
-        editor.putBoolean("isLoggedIn", true); // Save login status
-        editor.apply();
-        Log.d("Retrofit", "Login successful, Token: " + token);
-
-    }
+//    private void saveToken(String token) {
+//        // Store the token in SharedPreferences
+//        SharedPreferences sharedPreferences = getSharedPreferences("authPrefs", MODE_PRIVATE);
+//        SharedPreferences.Editor editor = sharedPreferences.edit();
+//        editor.putString("token", token);
+//        editor.putBoolean("isLoggedIn", true); // Save login status
+//        editor.apply();
+//        Log.d("Retrofit", "Login successful, Token: " + token);
+//
+//    }
 
 }

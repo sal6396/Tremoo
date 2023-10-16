@@ -17,12 +17,15 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import com.ai.tremoo.ApiService;
 import com.ai.tremoo.Audio_Activity;
@@ -53,6 +56,10 @@ public class Submit_Data_Fragment extends Fragment {
     private Uri videoUri;
     ImageButton backSumission;
 
+    private ImageView backButton;
+    private RelativeLayout toolbar;
+    private TextView titleTextView;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -71,6 +78,20 @@ public class Submit_Data_Fragment extends Fragment {
         imageView = rootView.findViewById(R.id.imageView);
         dataSubmission = rootView.findViewById(R.id.dataSubmission);
 //        backSumission = rootView.findViewById(R.id.backSubmission);
+
+        toolbar = rootView.findViewById(R.id.toolbar);
+        titleTextView = rootView.findViewById(R.id.title);
+        backButton = rootView.findViewById(R.id.back);
+        backButton.setVisibility(View.VISIBLE);
+
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onBackPressed(); // Handle back button click here
+            }
+        });
+        String dynamicTitle = "Data SUBMISSION"; // Replace this with your dynamic title
+        titleTextView.setText(dynamicTitle);
 
         dataSubmission.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -359,5 +380,12 @@ public class Submit_Data_Fragment extends Fragment {
             this.data = data;
             type = mimeType;
         }
+    }
+
+    private void onBackPressed() {
+        FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+        fragmentManager.beginTransaction()
+                .replace(R.id.frameLayout, new Project_Details_Fragment())
+                .commit();
     }
 }

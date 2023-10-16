@@ -107,4 +107,16 @@ public class SharedPrefManager {
         return sharedPreferences.getString(KEY_EDUCATION, null);
     }
 
+    public boolean saveToken(String token) {
+        SharedPreferences sharedPreferences = ctx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(KEY_BEARER_TOKEN, token);
+        editor.apply();
+        return true;
+    }
+
+    public String getToken() {
+        SharedPreferences sharedPreferences = ctx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
+        return sharedPreferences.getString(KEY_BEARER_TOKEN, null);
+    }
 }

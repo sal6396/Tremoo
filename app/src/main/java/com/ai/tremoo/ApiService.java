@@ -4,8 +4,6 @@ import com.ai.tremoo.Models.Login_Response;
 import com.ai.tremoo.Models.ProjectsResponse;
 import com.ai.tremoo.Models.Register_Response;
 
-import java.util.List;
-
 import retrofit2.Call;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
@@ -39,5 +37,5 @@ public interface ApiService {
     );
 
     @GET("projects")
-    Call<List<ProjectsResponse>> getProjects(@Header("Authorization") String authorizationHeader);
+    Call<ProjectsResponse> getProjects(@Header("Authorization") String authorizationHeader);
 }

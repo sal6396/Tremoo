@@ -2,8 +2,8 @@ package com.ai.tremoo;
 
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -40,6 +40,7 @@ public class RegisterActivity extends AppCompatActivity {
     List<String> countries = CountryList.getCountryNames();
     List<String> education = Arrays.asList("Level of Education", "High School", "College", "Graduate", "Post-Graduate");
     private ProgressDialog progressDialog;
+    private Context context;
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -78,6 +79,8 @@ public class RegisterActivity extends AppCompatActivity {
 
         progressDialog = new ProgressDialog(this);
         progressDialog.setCancelable(false);
+
+        context = this;
 
         ArrayAdapter<String> adapter1 = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, education);
         spinnerEducation.setAdapter(adapter1);
@@ -184,7 +187,7 @@ public class RegisterActivity extends AppCompatActivity {
                     if (user != null) {
                         // Login successful, store the token
                         String token = registerResponse.getData().getToken(); // Get the token from Data
-                        saveToken(token);
+                        SharedPrefManager.getInstance(context).saveToken(token);
                         Log.d("Retrofit", "Register successful, Token: " + token);
                         Toast.makeText(RegisterActivity.this, "Register successful", Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(RegisterActivity.this, MainActivity.class);
@@ -218,16 +221,16 @@ public class RegisterActivity extends AppCompatActivity {
         });
 
     }
-        private void saveToken(String token) {
-            // Store the token in SharedPreferences
-            SharedPreferences sharedPreferences = getSharedPreferences("authPrefs", MODE_PRIVATE);
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putString("token", token);
-            editor.putBoolean("isRegister", true); // Save login status
-            editor.apply();
-            Log.d("Retrofit", "Register successful, Token: " + token);
-
-        }
+//        private void saveToken(String token) {
+//            // Store the token in SharedPreferences
+//            SharedPreferences sharedPreferences = getSharedPreferences("authPrefs", MODE_PRIVATE);
+//            SharedPreferences.Editor editor = sharedPreferences.edit();
+//            editor.putString("token", token);
+//            editor.putBoolean("isRegister", true); // Save login status
+//            editor.apply();
+//            Log.d("Retrofit", "Register successful, Token: " + token);
+//
+//        }
 }
 
 
