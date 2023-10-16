@@ -1,5 +1,6 @@
 package com.ai.tremoo;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -26,6 +27,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     private EditText email, password;
     private CheckBox saveLoginCheckBox;
+    private ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +39,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         saveLoginCheckBox = findViewById(R.id.saveLoginCheckBox);
         Button loginButton = findViewById(R.id.buttonLogin);
         TextView newUser = findViewById(R.id.textViewNewUser);
+
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setCancelable(false);
 
         loginButton.setOnClickListener(this);
         newUser.setOnClickListener(this);
@@ -88,6 +93,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             return;
         }
 
+        progressDialog.setMessage("Registering User...");
+        progressDialog.show();
+
+
         Call<Login_Response> call = RequestHandler.getInstance().getApi().login(userEmail, userPassword);
 
         call.enqueue(new Callback<Login_Response>() {
@@ -122,10 +131,12 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     // Handle unsuccessful response
                     Toast.makeText(LoginActivity.this, "Login failed. Please try again.", Toast.LENGTH_SHORT).show();
                 }
+                progressDialog.dismiss();
             }
 
             @Override
             public void onFailure(Call<Login_Response> call, Throwable t) {
+                progressDialog.dismiss();
                 // Log the request URL
                 Log.d("Retrofit", "Request URL: " + call.request().url());
 

@@ -15,10 +15,9 @@ public class SharedPrefManager {
     private static final String KEY_CITY = "usercity";
     private static final String KEY_EDUCATION = "usereducation";
     private static final String KEY_USER_ID = "userid";
-    private static final String KEY_GENDER = "usergender";
     private static final String KEY_IMAGE = "userimage";
+    private static final String KEY_BEARER_TOKEN = "bearer_token";
     private String email;
-    private String gender;
     private String image;
     private String country;
     private String city;
@@ -35,6 +34,8 @@ public class SharedPrefManager {
         }
         return instance;
     }
+    
+
 
     public boolean userLogin(int id, String username) {
         SharedPreferences sharedPreferences = ctx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
@@ -45,7 +46,6 @@ public class SharedPrefManager {
         editor.putString(KEY_COUNTRY, country);
         editor.putString(KEY_CITY, city);
         editor.putString(KEY_EDUCATION, education);
-        editor.putString(KEY_GENDER, gender);
         editor.putString(KEY_IMAGE, image);
         editor.apply();
         return true;
@@ -94,10 +94,6 @@ public class SharedPrefManager {
         return sharedPreferences.getString(KEY_CITY, null);
     }
 
-    public String getGender() {
-        SharedPreferences sharedPreferences = ctx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
-        return sharedPreferences.getString(KEY_GENDER, null);
-    }
 
     public String getImage() {
         SharedPreferences sharedPreferences = ctx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
@@ -110,4 +106,5 @@ public class SharedPrefManager {
         SharedPreferences sharedPreferences = ctx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
         return sharedPreferences.getString(KEY_EDUCATION, null);
     }
+
 }

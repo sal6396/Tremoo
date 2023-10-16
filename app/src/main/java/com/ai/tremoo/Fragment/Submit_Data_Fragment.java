@@ -8,49 +8,29 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.*;
-import androidx.annotation.NonNull;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.Toast;
+
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 
 import com.ai.tremoo.ApiService;
 import com.ai.tremoo.Audio_Activity;
-import com.ai.tremoo.Constants;
-import com.ai.tremoo.MainActivity;
 import com.ai.tremoo.R;
-import com.ai.tremoo.RequestHandler;
-import com.android.volley.AuthFailureError;
-import com.android.volley.NetworkResponse;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
-import okhttp3.Callback;
-import okhttp3.MediaType;
-import okhttp3.MultipartBody;
-import okhttp3.RequestBody;
-import okhttp3.ResponseBody;
-import retrofit2.Call;
 import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class Submit_Data_Fragment extends Fragment {
 
@@ -96,7 +76,7 @@ public class Submit_Data_Fragment extends Fragment {
             @Override
             public void onClick(View v) {
                 if (imageBitmap != null) {
-                    uploadImage();
+//                    uploadImage();
                 } else if (videoUri != null) {
                     uploadVideo();
                 } else {
@@ -144,40 +124,40 @@ public class Submit_Data_Fragment extends Fragment {
 
 
 
-    private void uploadImage() {
-        String url = Constants.URL_GET_PROJECTS; // Replace with your server URL
-
-        VolleyMultipartRequest multipartRequest = new VolleyMultipartRequest(
-                Request.Method.POST,
-                url,
-                new Response.Listener<NetworkResponse>() {
-                    @Override
-                    public void onResponse(NetworkResponse response) {
-                        String jsonResponse = new String(response.data);
-                        Log.d("UploadResponse", jsonResponse);
-                        Toast.makeText(getActivity(), "Image uploaded successfully", Toast.LENGTH_SHORT).show();
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Log.e("UploadError", error.toString());
-                        Toast.makeText(getActivity(), "Error uploading image", Toast.LENGTH_SHORT).show();
-                    }
-                }
-        ) {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> headers = new HashMap<>();
-                headers.put("Authorization", "Bearer YOUR_AUTH_TOKEN"); // Replace with your token
-                return headers;
-            }
-
-        };
-
-        RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
-        requestQueue.add(multipartRequest);
-    }
+//    private void uploadImage() {
+//        String url = Constants.URL_GET_PROJECTS; // Replace with your server URL
+//
+//        VolleyMultipartRequest multipartRequest = new VolleyMultipartRequest(
+//                Request.Method.POST,
+//                url,
+//                new Response.Listener<NetworkResponse>() {
+//                    @Override
+//                    public void onResponse(NetworkResponse response) {
+//                        String jsonResponse = new String(response.data);
+//                        Log.d("UploadResponse", jsonResponse);
+//                        Toast.makeText(getActivity(), "Image uploaded successfully", Toast.LENGTH_SHORT).show();
+//                    }
+//                },
+//                new Response.ErrorListener() {
+//                    @Override
+//                    public void onErrorResponse(VolleyError error) {
+//                        Log.e("UploadError", error.toString());
+//                        Toast.makeText(getActivity(), "Error uploading image", Toast.LENGTH_SHORT).show();
+//                    }
+//                }
+//        ) {
+//            @Override
+//            public Map<String, String> getHeaders() throws AuthFailureError {
+//                Map<String, String> headers = new HashMap<>();
+//                headers.put("Authorization", "Bearer YOUR_AUTH_TOKEN"); // Replace with your token
+//                return headers;
+//            }
+//
+//        };
+//
+//        RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
+//        requestQueue.add(multipartRequest);
+//    }
 
     private void uploadVideo() {
         // Implement video upload logic similar to image upload
@@ -276,97 +256,97 @@ public class Submit_Data_Fragment extends Fragment {
         }
     }
 
+//    private void fetchProjectDetails(String projectID) {
+//        // Create a JsonObjectRequest to get the project data from the server
+//        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
+//                Request.Method.GET,
+//                Constants.URL_GET_PROJECTS + "?projectId=" + projectID,
+//                null,
+//                new Response.Listener<JSONObject>() {
+//                    @Override
+//                    public void onResponse(JSONObject response) {
+//                        Log.d("VolleyResponse", "Response JSON: " + response.toString());
+//
+//                        try {
+//                            // Parse the JSON array of projects
+//                            JSONArray projectsArray = response.getJSONArray("data");
+//
+//                            // Initialize a variable to store project type
+//                            String projectType = "";
+//
+//                            // Split the "type" string by commas
+//                            String[] types = projectType.split(",");
+//
+//                            // Iterate through the types and set radio button visibility
+//                            for (String type : types) {
+//                                type = type.trim(); // Remove leading/trailing spaces
+//
+//                                // Assuming you have radio buttons with IDs radioButtonImage, radioButtonVideo, etc.
+//                                // Show/hide radio buttons based on the type
+//                                if (type.equalsIgnoreCase("Image")) {
+//                                    radioButtonImage.setVisibility(View.VISIBLE);
+//                                } else if (type.equalsIgnoreCase("Video")) {
+//                                    radioButtonVideo.setVisibility(View.VISIBLE);
+//                                } else if (type.equalsIgnoreCase("Audio")) {
+//                                    radioButtonAudio.setVisibility(View.VISIBLE);
+//                                } else if (type.equalsIgnoreCase("Text")) {
+//                                    radioButtonText.setVisibility(View.VISIBLE);
+//                                }
+//                            }
+//
+//                        } catch (JSONException e) {
+//                            e.printStackTrace();
+//                        }
+//
+//                    }
+//                },
+//                new Response.ErrorListener() {
+//                    @Override
+//                    public void onErrorResponse(VolleyError error) {
+//                        // Handle errors, display an error message or take appropriate action
+//                        Log.e("Volley Error", "Error fetching data: " + error.getMessage());
+//                        // Display an error message to the user if needed
+//                        requireActivity().runOnUiThread(new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                Toast.makeText(requireContext(), "Error fetching project details.", Toast.LENGTH_SHORT).show();
+//                            }
+//                        });
+//                    }
+//                }
+//        );
+//
+//        // Add the request to the Volley request queue
+////        RequestHandler.getInstance(requireContext()).addToRequestQueue(jsonObjectRequest);
+//    }
+//
+//    private class VolleyMultipartRequest extends Request<NetworkResponse> {
+//        private final Response.Listener<NetworkResponse> mListener;
+//        private final Response.ErrorListener mErrorListener;
+//
+//        public VolleyMultipartRequest(int method, String url,
+//                                      Response.Listener<NetworkResponse> listener,
+//                                      Response.ErrorListener errorListener) {
+//            super(method, url, errorListener);
+//            this.mListener = listener;
+//            this.mErrorListener = errorListener;
+//        }
+//
+//        @Override
+//        protected Response<NetworkResponse> parseNetworkResponse(NetworkResponse response) {
+//            return Response.success(response, getCacheEntry());
+//        }
+//
+//        @Override
+//        protected void deliverResponse(NetworkResponse response) {
+//            mListener.onResponse(response);
+//        }
+//    }
+
     private Bitmap compressBitmap(Bitmap bitmap, int quality) {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG, quality, stream);
         return BitmapFactory.decodeByteArray(stream.toByteArray(), 0, stream.toByteArray().length);
-    }
-
-    private void fetchProjectDetails(String projectID) {
-        // Create a JsonObjectRequest to get the project data from the server
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
-                Request.Method.GET,
-                Constants.URL_GET_PROJECTS + "?projectId=" + projectID,
-                null,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        Log.d("VolleyResponse", "Response JSON: " + response.toString());
-
-                        try {
-                            // Parse the JSON array of projects
-                            JSONArray projectsArray = response.getJSONArray("data");
-
-                            // Initialize a variable to store project type
-                            String projectType = "";
-
-                            // Split the "type" string by commas
-                            String[] types = projectType.split(",");
-
-                            // Iterate through the types and set radio button visibility
-                            for (String type : types) {
-                                type = type.trim(); // Remove leading/trailing spaces
-
-                                // Assuming you have radio buttons with IDs radioButtonImage, radioButtonVideo, etc.
-                                // Show/hide radio buttons based on the type
-                                if (type.equalsIgnoreCase("Image")) {
-                                    radioButtonImage.setVisibility(View.VISIBLE);
-                                } else if (type.equalsIgnoreCase("Video")) {
-                                    radioButtonVideo.setVisibility(View.VISIBLE);
-                                } else if (type.equalsIgnoreCase("Audio")) {
-                                    radioButtonAudio.setVisibility(View.VISIBLE);
-                                } else if (type.equalsIgnoreCase("Text")) {
-                                    radioButtonText.setVisibility(View.VISIBLE);
-                                }
-                            }
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        // Handle errors, display an error message or take appropriate action
-                        Log.e("Volley Error", "Error fetching data: " + error.getMessage());
-                        // Display an error message to the user if needed
-                        requireActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Toast.makeText(requireContext(), "Error fetching project details.", Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                    }
-                }
-        );
-
-        // Add the request to the Volley request queue
-//        RequestHandler.getInstance(requireContext()).addToRequestQueue(jsonObjectRequest);
-    }
-
-    private class VolleyMultipartRequest extends Request<NetworkResponse> {
-        private final Response.Listener<NetworkResponse> mListener;
-        private final Response.ErrorListener mErrorListener;
-
-        public VolleyMultipartRequest(int method, String url,
-                                      Response.Listener<NetworkResponse> listener,
-                                      Response.ErrorListener errorListener) {
-            super(method, url, errorListener);
-            this.mListener = listener;
-            this.mErrorListener = errorListener;
-        }
-
-        @Override
-        protected Response<NetworkResponse> parseNetworkResponse(NetworkResponse response) {
-            return Response.success(response, getCacheEntry());
-        }
-
-        @Override
-        protected void deliverResponse(NetworkResponse response) {
-            mListener.onResponse(response);
-        }
     }
 
     private class DataPart {

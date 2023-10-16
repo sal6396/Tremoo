@@ -3,6 +3,7 @@ package com.ai.tremoo;
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -14,21 +15,25 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+
 import com.ai.tremoo.Models.Register_Response;
 
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 public class RegisterActivity extends AppCompatActivity {
 
-    private EditText edname, edemail, edpassword, edconfirm, edphone, edgender, edCity;
+    private EditText edname, edemail, edpassword, edconfirm, edphone, edCity;
     private Button btn;
     CheckBox checkBox1, checkBox2;
     Spinner spinnerCountry, spinnerEducation;
@@ -48,12 +53,28 @@ public class RegisterActivity extends AppCompatActivity {
         edemail = findViewById(R.id.editTextEmail);
         btn = findViewById(R.id.buttonReg);
         edphone = findViewById(R.id.editTextTextPhoneNo);
-        edgender = findViewById(R.id.editTextTextGender);
         edCity = findViewById(R.id.editTextTextCity);
         checkBox1 = findViewById(R.id.checkBox);
         checkBox2 = findViewById(R.id.checkBox2);
         spinnerCountry = findViewById(R.id.spinnerCountry);
         spinnerEducation = findViewById(R.id.spinnerEducation);
+
+
+
+        View backButton = findViewById(R.id.back);
+        backButton.setVisibility(View.VISIBLE);
+
+        TextView titleTextView = findViewById(R.id.title);
+        String dynamicTitle = "Register for New User";
+        titleTextView.setText(dynamicTitle);
+
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onBackPressed(); // Handle back button click here
+            }
+        });
+
 
         progressDialog = new ProgressDialog(this);
         progressDialog.setCancelable(false);
@@ -119,7 +140,6 @@ public class RegisterActivity extends AppCompatActivity {
         String password = edpassword.getText().toString().trim();
         String confirm = edconfirm.getText().toString().trim();
         String phoneNo = edphone.getText().toString().trim();
-        String gender = edgender.getText().toString().trim();
         String city = edCity.getText().toString().trim();
         String selectedCountry = spinnerCountry.getSelectedItem().toString();
         String selectedEducation = spinnerEducation.getSelectedItem().toString();
@@ -127,7 +147,7 @@ public class RegisterActivity extends AppCompatActivity {
         int checkBox2Value = checkBox2.isChecked() ? 1 : 0;
 
         if (TextUtils.isEmpty(name) || TextUtils.isEmpty(email) || TextUtils.isEmpty(password) ||
-                TextUtils.isEmpty(confirm) || TextUtils.isEmpty(phoneNo) || TextUtils.isEmpty(gender)  || TextUtils.isEmpty(selectedCountry)|| TextUtils.isEmpty(selectedEducation)||
+                TextUtils.isEmpty(confirm) || TextUtils.isEmpty(phoneNo) || TextUtils.isEmpty(selectedCountry) || TextUtils.isEmpty(selectedEducation) ||
                 TextUtils.isEmpty(city)) {
 
             Toast.makeText(this, "Please fill in all the fields", Toast.LENGTH_SHORT).show();
@@ -143,42 +163,40 @@ public class RegisterActivity extends AppCompatActivity {
         progressDialog.show();
 
         Call<Register_Response> call = RequestHandler.getInstance().getApi().register(
-                name, email, password, confirm, phoneNo,gender, city, selectedCountry, selectedEducation,
+                name, email, password, confirm, phoneNo, city, selectedCountry, selectedEducation,
                 String.valueOf(checkBox1Value), String.valueOf(checkBox2Value));
 
         call.enqueue(new Callback<Register_Response>() {
             @Override
             public void onResponse(Call<Register_Response> call, Response<Register_Response> response) {
+                // Log the request URL
+                Log.d("Retrofit", "Request URL: " + call.request().url());
+
+                // Log the response code
+                Log.d("Retrofit", "Response : " + response);
+
                 if (response.isSuccessful() && response.body() != null) {
                     Register_Response registerResponse = response.body();
-                    if (registerResponse != null && registerResponse.isSuccess()) {
+                    String message = registerResponse.getMessage();
+                    Log.d("Retrofit", "Login successful: " + message);
+
+                    Register_Response.User user = registerResponse.getData().getUser(); // Get the User object from Data
+                    if (user != null) {
+                        // Login successful, store the token
+                        String token = registerResponse.getData().getToken(); // Get the token from Data
+                        saveToken(token);
+                        Log.d("Retrofit", "Register successful, Token: " + token);
+                        Toast.makeText(RegisterActivity.this, "Register successful", Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(RegisterActivity.this, MainActivity.class);
                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         startActivity(intent);
-                        Toast.makeText(RegisterActivity.this, registerResponse.getMessage(), Toast.LENGTH_SHORT).show();
-
                     } else {
-                        // Handle unsuccessful response here
-                        String errorMessage = "Registration failed. Please try again.";
-                        if (registerResponse != null) {
-                            errorMessage = registerResponse.getMessage();
-                        }
-                        Log.e("Retrofit", "Response Error: " + errorMessage);
-                        Toast.makeText(RegisterActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
+                        // Handle unsuccessful login
+                        Toast.makeText(RegisterActivity.this, message, Toast.LENGTH_SHORT).show();
                     }
-
                 } else {
-                    // Handle unsuccessful response here
-                    String errorMessage = "Registration failed. Please try again.";
-                    if (response.errorBody() != null) {
-                        try {
-                            errorMessage = response.errorBody().string();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                    Log.e("Retrofit", "Response Error: " + errorMessage);
-                    Toast.makeText(RegisterActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
+                    // Handle unsuccessful response
+                    Toast.makeText(RegisterActivity.this, "Login failed. Please try again.", Toast.LENGTH_SHORT).show();
                 }
                 progressDialog.dismiss();
             }
@@ -186,11 +204,32 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<Register_Response> call, Throwable t) {
                 progressDialog.dismiss();
-                Toast.makeText(RegisterActivity.this, "Registration failed. Please try again.", Toast.LENGTH_SHORT).show();
+                // Log the request URL
+                Log.d("Retrofit", "Request URL: " + call.request().url());
+
+                // Handle failure
+                Log.e("Retrofit", "Login request failed: " + t.getMessage());
+                if (t instanceof IOException) {
+                    Toast.makeText(RegisterActivity.this, "Network error occurred. Please check your internet connection and try again.", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(RegisterActivity.this, "Login failed. Please try again.", Toast.LENGTH_SHORT).show();
+                }
             }
         });
+
     }
+        private void saveToken(String token) {
+            // Store the token in SharedPreferences
+            SharedPreferences sharedPreferences = getSharedPreferences("authPrefs", MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putString("token", token);
+            editor.putBoolean("isRegister", true); // Save login status
+            editor.apply();
+            Log.d("Retrofit", "Register successful, Token: " + token);
+
+        }
 }
+
 
 
 

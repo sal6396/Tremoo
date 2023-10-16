@@ -7,16 +7,16 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-import com.ai.tremoo.Models.ProjectModel;
+import com.ai.tremoo.Models.ProjectsResponse;
 import com.ai.tremoo.R;
 
 import java.util.List;
 
 public class ProjectAdapter extends BaseAdapter {
-    private List<ProjectModel> projects;
+    private List<ProjectsResponse> projects;
     private LayoutInflater inflater;
 
-    public ProjectAdapter(Context context, List<ProjectModel> projects) {
+    public ProjectAdapter(Context context, List<ProjectsResponse> projects) {
         this.projects = projects;
         inflater = LayoutInflater.from(context);
     }
@@ -49,13 +49,13 @@ public class ProjectAdapter extends BaseAdapter {
         TextView projectCategoryTextView = convertView.findViewById(R.id.line_d);
         TextView projectStatusTextView = convertView.findViewById(R.id.line_f);
 
-        ProjectModel project = projects.get(position);
+        ProjectsResponse project = projects.get(position);
 
-        projectIdTextView.setText(project.getProjectId());
-        projectNameTextView.setText(project.getProjectName());
-        projectStatusTextView.setText(project.getProjectStatus());
-        projectCategoryTextView.setText(project.getProjectCategory());
-        projectProjectExpiryTextView.setText(project.getProjectExpiry());
+//        projectIdTextView.setText(project.getProjectId());
+//        projectNameTextView.setText(project.getProjectName());
+//        projectStatusTextView.setText(project.getProjectStatus());
+//        projectCategoryTextView.setText(project.getProjectCategory());
+//        projectProjectExpiryTextView.setText(project.getProjectExpiry());
 
 
         return convertView;

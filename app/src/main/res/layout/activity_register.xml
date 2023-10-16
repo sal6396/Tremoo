@@ -6,25 +6,8 @@
     android:layout_height="match_parent"
     tools:context=".RegisterActivity"
     android:background="@color/white">
+    <include layout="@layout/toolbar"/>
 
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="45dp"
-        android:background="@color/white"
-        android:orientation="horizontal">
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="Register for new user"
-            android:gravity="center"
-            android:textColor="@color/black"
-            android:textSize="20sp"
-            android:textStyle="bold" />
-
-
-    </LinearLayout>
 
     <ScrollView
         android:layout_width="match_parent"
@@ -167,26 +150,6 @@
                         android:ems="10"
                         android:hint="Phone Number"
                         android:inputType="phone"
-                        android:textColor="@color/black"
-                        android:textColorHint="@color/textcolor" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="60dp"
-                    android:textColorHint="@color/textcolor">
-
-                    <EditText
-                        android:id="@+id/editTextTextGender"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_marginTop="10dp"
-                        android:background="@drawable/input_bg"
-                        android:paddingStart="5dp"
-                        android:backgroundTint="@color/lightgrey"
-                        android:ems="10"
-                        android:hint="Gender"
-                        android:inputType="text"
                         android:textColor="@color/black"
                         android:textColorHint="@color/textcolor" />
                 </com.google.android.material.textfield.TextInputLayout>

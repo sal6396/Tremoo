@@ -1,7 +1,7 @@
 package com.ai.tremoo;
 
 import com.ai.tremoo.Models.Login_Response;
-import com.ai.tremoo.Models.ProjectModel;
+import com.ai.tremoo.Models.ProjectsResponse;
 import com.ai.tremoo.Models.Register_Response;
 
 import java.util.List;
@@ -10,6 +10,7 @@ import retrofit2.Call;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
+import retrofit2.http.Header;
 import retrofit2.http.POST;
 
 public interface ApiService {
@@ -21,7 +22,6 @@ public interface ApiService {
             @Field("email") String email,
             @Field("password") String password,
             @Field("confirm_password") String confirmPassword,
-            @Field("gender") String gender,
             @Field("city") String city,
             @Field("country") String country,
             @Field("education") String education,
@@ -39,5 +39,5 @@ public interface ApiService {
     );
 
     @GET("projects")
-    Call<List<ProjectModel>> getProjects();
+    Call<List<ProjectsResponse>> getProjects(@Header("Authorization") String authorizationHeader);
 }
