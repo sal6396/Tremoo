@@ -1,20 +1,26 @@
 package com.ai.tremoo.Fragment;
 
+import static com.ai.tremoo.RetrofitClient.retrofitClient;
+
 import android.Manifest;
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
@@ -29,24 +35,34 @@ import androidx.fragment.app.FragmentManager;
 
 import com.ai.tremoo.ApiService;
 import com.ai.tremoo.Audio_Activity;
+import com.ai.tremoo.Models.SubmissionData;
 import com.ai.tremoo.R;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
-import retrofit2.Retrofit;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
+import okhttp3.internal.connection.RealCall;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class Submit_Data_Fragment extends Fragment {
 
     private static final int CAMERA_REQUEST = 1888;
     private static final int VIDEO_CAPTURE_REQUEST = 2000;
     private static final int PERMISSION_REQUEST_CAMERA = 1;
+    private static final int AUDIO_CAPTURE_REQUEST = 1;
+    private static final int TEXT_INPUT_REQUEST = 1;
     private static final int PERMISSION_REQUEST_AUDIO = 2;
     private static final int IMAGE_UPLOAD_REQUEST_CODE = 123; // Unique request code for image upload
 
-    private Retrofit retrofit;
-    private ApiService apiService;
-
-    private EditText editText;
+    private EditText editText, submissionTitle, description;
+    private LinearLayout descripContainer;
     private Button btnImage, btnVideo, btnAudio;
     private RadioGroup radioGroup;
     private RadioButton radioButtonImage, radioButtonVideo, radioButtonAudio, radioButtonText;
@@ -54,11 +70,13 @@ public class Submit_Data_Fragment extends Fragment {
     private Button dataSubmission;
     private Bitmap imageBitmap;
     private Uri videoUri;
-    ImageButton backSumission;
 
     private ImageView backButton;
     private RelativeLayout toolbar;
     private TextView titleTextView;
+    private String projectType;
+    private RealCall RetrofitClient;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -72,12 +90,74 @@ public class Submit_Data_Fragment extends Fragment {
         radioButtonAudio = rootView.findViewById(R.id.radioButtonAudio);
         radioButtonText = rootView.findViewById(R.id.radioButtonText);
         editText = rootView.findViewById(R.id.editText);
+        submissionTitle = rootView.findViewById(R.id.submissionTitle);
+        description = rootView.findViewById(R.id.submissionDescription);
+        descripContainer = rootView.findViewById(R.id.discriptionContainer);
         btnImage = rootView.findViewById(R.id.capture_Image);
         btnVideo = rootView.findViewById(R.id.record_Video);
         btnAudio = rootView.findViewById(R.id.record_Audio);
-        imageView = rootView.findViewById(R.id.imageView);
         dataSubmission = rootView.findViewById(R.id.dataSubmission);
 //        backSumission = rootView.findViewById(R.id.backSubmission);
+
+
+
+        Bundle bundle = getArguments();
+        if (bundle != null) {
+            projectType = bundle.getString("type", ""); // Get projectType from the bundle
+
+            // Split the projectType string by comma to get individual types
+            String[] types = projectType.split(",");
+
+            // Loop through the types and dynamically show the corresponding radio buttons
+            // Loop through the types and dynamically show the corresponding radio buttons
+            for (String type : types) {
+                type = type.trim(); // Remove leading/trailing spaces
+
+                if ("Image".equals(type)) {
+                    radioButtonImage.setVisibility(View.VISIBLE);
+                } else if ("Video".equals(type)) {
+                    radioButtonVideo.setVisibility(View.VISIBLE);
+                } else if ("Audio".equals(type)) {
+                    radioButtonAudio.setVisibility(View.VISIBLE);
+                } else if ("Text".equals(type)) {
+                    radioButtonText.setVisibility(View.VISIBLE);
+                }
+            }
+
+            // Log the value of the projectType received as an argument
+            Log.d("Submit_Data_Fragment", "Received projectType argument: " + projectType);
+        } else {
+            // If projectType is not present in the bundle, get it from SharedPreferences or set a default value
+            SharedPreferences prefs = requireContext().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
+            projectType = prefs.getString("projectType", "Image"); // Set a default value like "Image"
+
+            // Show default radio buttons based on the default projectType
+            if ("Image".equals(projectType)) {
+                radioButtonImage.setVisibility(View.VISIBLE);
+                radioButtonVideo.setVisibility(View.GONE);
+                radioButtonAudio.setVisibility(View.GONE);
+                radioButtonText.setVisibility(View.GONE);
+            } else if ("Video".equals(projectType)) {
+                radioButtonImage.setVisibility(View.GONE);
+                radioButtonVideo.setVisibility(View.VISIBLE);
+                radioButtonAudio.setVisibility(View.GONE);
+                radioButtonText.setVisibility(View.GONE);
+            } else if ("Audio".equals(projectType)) {
+                radioButtonImage.setVisibility(View.GONE);
+                radioButtonVideo.setVisibility(View.GONE);
+                radioButtonAudio.setVisibility(View.VISIBLE);
+                radioButtonText.setVisibility(View.GONE);
+            } else if ("Text".equals(projectType)) {
+                radioButtonImage.setVisibility(View.GONE);
+                radioButtonVideo.setVisibility(View.GONE);
+                radioButtonAudio.setVisibility(View.GONE);
+                radioButtonText.setVisibility(View.VISIBLE);
+            }
+
+        }
+
+
+
 
         toolbar = rootView.findViewById(R.id.toolbar);
         titleTextView = rootView.findViewById(R.id.title);
@@ -99,27 +179,14 @@ public class Submit_Data_Fragment extends Fragment {
                 if (imageBitmap != null) {
 //                    uploadImage();
                 } else if (videoUri != null) {
-                    uploadVideo();
+
                 } else {
                     Toast.makeText(getActivity(), "No media selected", Toast.LENGTH_SHORT).show();
                 }
             }
         });
 
-//        backSumission.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                // Create an instance of Submit_Data_Fragment
-//                Project_Details_Fragment projectDetailsFragment = new Project_Details_Fragment();
-//
-//                FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
-//                transaction.replace(R.id.frameLayout, projectDetailsFragment); // Use the instance
-//                transaction.addToBackStack(null); // Optional: Adds to back stack
-//                transaction.commit();
-//            }
-//        });
 
-        setupRadioGroupListener();
 
         btnImage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -140,50 +207,40 @@ public class Submit_Data_Fragment extends Fragment {
             }
         });
 
+        // Handle radio button selection change
+        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, int checkedId) {
+                if (checkedId==R.id.radioButtonImage) {
+                    btnImage.setVisibility(View.VISIBLE);
+                    descripContainer.setVisibility(View.VISIBLE);
+                    btnVideo.setVisibility(View.GONE);
+                    btnAudio.setVisibility(View.GONE);
+                    editText.setVisibility(View.GONE);
+                } else if (checkedId==R.id.radioButtonVideo) {
+                    btnImage.setVisibility(View.GONE);
+                    btnVideo.setVisibility(View.VISIBLE);
+                    descripContainer.setVisibility(View.VISIBLE);
+                    btnAudio.setVisibility(View.GONE);
+                    editText.setVisibility(View.GONE);
+                } else if (checkedId==R.id.radioButtonAudio) {
+                    btnImage.setVisibility(View.GONE);
+                    btnVideo.setVisibility(View.GONE);
+                    btnAudio.setVisibility(View.VISIBLE);
+                    descripContainer.setVisibility(View.VISIBLE);
+                    editText.setVisibility(View.GONE);
+                } else if (checkedId==R.id.radioButtonText) {
+                    btnImage.setVisibility(View.GONE);
+                    btnVideo.setVisibility(View.GONE);
+                    btnAudio.setVisibility(View.GONE);
+                    descripContainer.setVisibility(View.GONE);
+                    editText.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+
+
         return rootView;
-    }
-
-
-
-//    private void uploadImage() {
-//        String url = Constants.URL_GET_PROJECTS; // Replace with your server URL
-//
-//        VolleyMultipartRequest multipartRequest = new VolleyMultipartRequest(
-//                Request.Method.POST,
-//                url,
-//                new Response.Listener<NetworkResponse>() {
-//                    @Override
-//                    public void onResponse(NetworkResponse response) {
-//                        String jsonResponse = new String(response.data);
-//                        Log.d("UploadResponse", jsonResponse);
-//                        Toast.makeText(getActivity(), "Image uploaded successfully", Toast.LENGTH_SHORT).show();
-//                    }
-//                },
-//                new Response.ErrorListener() {
-//                    @Override
-//                    public void onErrorResponse(VolleyError error) {
-//                        Log.e("UploadError", error.toString());
-//                        Toast.makeText(getActivity(), "Error uploading image", Toast.LENGTH_SHORT).show();
-//                    }
-//                }
-//        ) {
-//            @Override
-//            public Map<String, String> getHeaders() throws AuthFailureError {
-//                Map<String, String> headers = new HashMap<>();
-//                headers.put("Authorization", "Bearer YOUR_AUTH_TOKEN"); // Replace with your token
-//                return headers;
-//            }
-//
-//        };
-//
-//        RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
-//        requestQueue.add(multipartRequest);
-//    }
-
-    private void uploadVideo() {
-        // Implement video upload logic similar to image upload
-        // Replace Constants.URL_POST_VIDEO with your server's URL for video upload
-        // You'll need to use the videoUri to upload the video file to the server
     }
 
     private byte[] imageBitmapToByteArray(Bitmap bitmap) {
@@ -192,31 +249,6 @@ public class Submit_Data_Fragment extends Fragment {
         return baos.toByteArray();
     }
 
-    private void setupRadioGroupListener() {
-        radioGroup.setOnCheckedChangeListener((group, checkedId) -> {
-            if (checkedId == R.id.radioButtonImage) {
-                editText.setVisibility(View.GONE);
-                btnImage.setVisibility(View.VISIBLE);
-                btnVideo.setVisibility(View.GONE);
-                btnAudio.setVisibility(View.GONE);
-            } else if (checkedId == R.id.radioButtonVideo) {
-                editText.setVisibility(View.GONE);
-                btnImage.setVisibility(View.GONE);
-                btnVideo.setVisibility(View.VISIBLE);
-                btnAudio.setVisibility(View.GONE);
-            } else if (checkedId == R.id.radioButtonAudio) {
-                editText.setVisibility(View.GONE);
-                btnImage.setVisibility(View.GONE);
-                btnVideo.setVisibility(View.GONE);
-                btnAudio.setVisibility(View.VISIBLE);
-            } else if (checkedId == R.id.radioButtonText) {
-                editText.setVisibility(View.VISIBLE);
-                btnImage.setVisibility(View.GONE);
-                btnVideo.setVisibility(View.GONE);
-                btnAudio.setVisibility(View.GONE);
-            }
-        });
-    }
 
     private void checkCameraPermission() {
         if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
@@ -259,110 +291,109 @@ public class Submit_Data_Fragment extends Fragment {
         startActivityForResult(videoIntent, VIDEO_CAPTURE_REQUEST);
     }
 
-    @Override
+
+
+    private void uploadMedia(String mediaType, File mediaFile) {
+        // Create request body for media file
+        RequestBody requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), mediaFile);
+        MultipartBody.Part mediaPart = MultipartBody.Part.createFormData("media", mediaFile.getName(), requestFile);
+
+        // Create request body for other parameters
+        RequestBody mediaTypeBody = RequestBody.create(MediaType.parse("text/plain"), mediaType);
+        RequestBody titleBody = RequestBody.create(MediaType.parse("text/plain"), submissionTitle.getText().toString());
+        RequestBody descriptionBody = RequestBody.create(MediaType.parse("text/plain"), description.getText().toString());
+
+
+
+        // Get the ApiService instance from RetrofitClient
+        ApiService apiService = retrofitClient.getApiService();
+        Call<SubmissionData> call = apiService.uploadMedia(mediaPart, mediaTypeBody, titleBody, descriptionBody);
+        call.enqueue(new Callback<SubmissionData>() {
+            @Override
+            public void onResponse(Call<SubmissionData> call, Response<SubmissionData> response) {
+                if (response.isSuccessful()) {
+                    // Handle successful upload
+                    Toast.makeText(getActivity(), "Media uploaded successfully", Toast.LENGTH_SHORT).show();
+                } else {
+                    // Handle upload failure
+                    Toast.makeText(getActivity(), "Error uploading media", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<SubmissionData> call, Throwable t) {
+                // Handle upload failure
+                Toast.makeText(getActivity(), "Error uploading media: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+
+
+
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == CAMERA_REQUEST && resultCode == getActivity().RESULT_OK && data != null) {
+
+        if (resultCode != Activity.RESULT_OK) {
+            return;
+        }
+
+        if (requestCode == CAMERA_REQUEST && data != null) {
             Bitmap photo = (Bitmap) data.getExtras().get("data");
             if (photo != null) {
-                Bitmap compressedBitmap = compressBitmap(photo, 100);
-                imageView.setImageBitmap(compressedBitmap);
-                imageBitmap = compressedBitmap;
+                // Compress bitmap if necessary
+                File mediaFile = compressBitmapToFile(photo);
+                if (mediaFile != null) {
+                    uploadMedia("image", mediaFile);
+                } else {
+                    Toast.makeText(getActivity(), "Error compressing image", Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                Toast.makeText(getActivity(), "Error capturing image", Toast.LENGTH_SHORT).show();
             }
-        } else if (requestCode == VIDEO_CAPTURE_REQUEST && resultCode == getActivity().RESULT_OK && data != null) {
-            videoUri = data.getData();
+        } else if (requestCode == VIDEO_CAPTURE_REQUEST && data != null) {
+            Uri videoUri = data.getData();
             if (videoUri != null) {
-                // Handle the captured video URI here (e.g., store it for future use).
+                // Handle videoUri and upload the video file
+            }
+        } else if (requestCode == AUDIO_CAPTURE_REQUEST && data != null) {
+            Uri audioUri = data.getData();
+            if (audioUri != null) {
+                // Handle audioUri and upload the audio file
+            }
+        } else if (requestCode == TEXT_INPUT_REQUEST && data != null) {
+            String text = data.getStringExtra("text");
+            if (text != null && !text.isEmpty()) {
+                // Upload text to the server
+                uploadText(text);
             }
         }
     }
 
-//    private void fetchProjectDetails(String projectID) {
-//        // Create a JsonObjectRequest to get the project data from the server
-//        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
-//                Request.Method.GET,
-//                Constants.URL_GET_PROJECTS + "?projectId=" + projectID,
-//                null,
-//                new Response.Listener<JSONObject>() {
-//                    @Override
-//                    public void onResponse(JSONObject response) {
-//                        Log.d("VolleyResponse", "Response JSON: " + response.toString());
-//
-//                        try {
-//                            // Parse the JSON array of projects
-//                            JSONArray projectsArray = response.getJSONArray("data");
-//
-//                            // Initialize a variable to store project type
-//                            String projectType = "";
-//
-//                            // Split the "type" string by commas
-//                            String[] types = projectType.split(",");
-//
-//                            // Iterate through the types and set radio button visibility
-//                            for (String type : types) {
-//                                type = type.trim(); // Remove leading/trailing spaces
-//
-//                                // Assuming you have radio buttons with IDs radioButtonImage, radioButtonVideo, etc.
-//                                // Show/hide radio buttons based on the type
-//                                if (type.equalsIgnoreCase("Image")) {
-//                                    radioButtonImage.setVisibility(View.VISIBLE);
-//                                } else if (type.equalsIgnoreCase("Video")) {
-//                                    radioButtonVideo.setVisibility(View.VISIBLE);
-//                                } else if (type.equalsIgnoreCase("Audio")) {
-//                                    radioButtonAudio.setVisibility(View.VISIBLE);
-//                                } else if (type.equalsIgnoreCase("Text")) {
-//                                    radioButtonText.setVisibility(View.VISIBLE);
-//                                }
-//                            }
-//
-//                        } catch (JSONException e) {
-//                            e.printStackTrace();
-//                        }
-//
-//                    }
-//                },
-//                new Response.ErrorListener() {
-//                    @Override
-//                    public void onErrorResponse(VolleyError error) {
-//                        // Handle errors, display an error message or take appropriate action
-//                        Log.e("Volley Error", "Error fetching data: " + error.getMessage());
-//                        // Display an error message to the user if needed
-//                        requireActivity().runOnUiThread(new Runnable() {
-//                            @Override
-//                            public void run() {
-//                                Toast.makeText(requireContext(), "Error fetching project details.", Toast.LENGTH_SHORT).show();
-//                            }
-//                        });
-//                    }
-//                }
-//        );
-//
-//        // Add the request to the Volley request queue
-////        RequestHandler.getInstance(requireContext()).addToRequestQueue(jsonObjectRequest);
-//    }
-//
-//    private class VolleyMultipartRequest extends Request<NetworkResponse> {
-//        private final Response.Listener<NetworkResponse> mListener;
-//        private final Response.ErrorListener mErrorListener;
-//
-//        public VolleyMultipartRequest(int method, String url,
-//                                      Response.Listener<NetworkResponse> listener,
-//                                      Response.ErrorListener errorListener) {
-//            super(method, url, errorListener);
-//            this.mListener = listener;
-//            this.mErrorListener = errorListener;
-//        }
-//
-//        @Override
-//        protected Response<NetworkResponse> parseNetworkResponse(NetworkResponse response) {
-//            return Response.success(response, getCacheEntry());
-//        }
-//
-//        @Override
-//        protected void deliverResponse(NetworkResponse response) {
-//            mListener.onResponse(response);
-//        }
-//    }
+    private void uploadText(String text) {
+        // Implement logic to upload text to the server
+        // Use Retrofit or any other networking library to make the API call
+        // Handle the response accordingly
+    }
+
+
+    private File compressBitmapToFile(Bitmap bitmap) {
+        try {
+            File filesDir = getActivity().getFilesDir();
+            File imageFile = new File(filesDir, "compressed_image.jpg");
+
+            FileOutputStream out = new FileOutputStream(imageFile);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 50, out); // Adjust the quality as needed
+            out.close();
+
+            return imageFile;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null; // Handle the exception according to your application's logic
+        }
+    }
+
+
 
     private Bitmap compressBitmap(Bitmap bitmap, int quality) {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
@@ -370,17 +401,7 @@ public class Submit_Data_Fragment extends Fragment {
         return BitmapFactory.decodeByteArray(stream.toByteArray(), 0, stream.toByteArray().length);
     }
 
-    private class DataPart {
-        private final String fileName;
-        private final byte[] data;
-        private final String type;
 
-        public DataPart(String name, byte[] data, String mimeType) {
-            fileName = name;
-            this.data = data;
-            type = mimeType;
-        }
-    }
 
     private void onBackPressed() {
         FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();

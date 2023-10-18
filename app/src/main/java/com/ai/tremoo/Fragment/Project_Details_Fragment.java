@@ -2,7 +2,10 @@ package com.ai.tremoo.Fragment;
 
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,6 +43,12 @@ public class Project_Details_Fragment extends Fragment  {
     // Data
     private List<Project> projectList;
 
+    private String puid;
+    private String details;
+    private String name;
+    private String expiryDate;
+    private String projectType;
+
 
     @SuppressLint({"MissingInflatedId", "SetTextI18n"})
     @Override
@@ -47,17 +56,24 @@ public class Project_Details_Fragment extends Fragment  {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_project__details_, container, false);
 
-        progressDialog = new ProgressDialog(requireContext());
-        progressDialog.setCancelable(false);
+//        progressDialog = new ProgressDialog(requireContext());
+//        progressDialog.setCancelable(false);
+
+        // Inside your Project_Details_Fragment after getting the projectType
+        SharedPreferences.Editor editor = requireContext().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE).edit();
+        editor.putString("projectType", projectType);
+        editor.apply();
 
 
+
+//        showProgressDialog();
         Bundle bundle = getArguments();
-        showProgressDialog();
         if (bundle != null) {
             String puid = bundle.getString("puid", "");
             String details = bundle.getString("details", "");
             String name = bundle.getString("name", "");
             String expiryDate = bundle.getString("expiry_date", "");
+
 
             TextView puidTextView = rootView.findViewById(R.id.projectId);
             TextView detailsTextView = rootView.findViewById(R.id.projectDetails);
@@ -68,7 +84,7 @@ public class Project_Details_Fragment extends Fragment  {
             detailsTextView.setText(details);
             nameTextView.setText(name);
             expiryDateTextView.setText(expiryDate);
-            hideProgressDialog();
+//            hideProgressDialog();
         }
 
 
@@ -103,16 +119,38 @@ public class Project_Details_Fragment extends Fragment  {
             @Override
             public void onClick(View view) {
                 // Create an instance of Submit_Data_Fragment
+                // Create a new fragment instance
                 Submit_Data_Fragment submitDataFragment = new Submit_Data_Fragment();
+                projectType = bundle.getString("type", "");
 
+                // Pass the data to the Submit_Data_Fragment using arguments
+                Bundle dataBundle = new Bundle();
+                dataBundle.putString("type", projectType); // Add this line to pass the type information
+                submitDataFragment.setArguments(dataBundle);
+                Log.d("Project_Details_Fragment", "Received arguments - projectType: " + projectType);
+
+                // Begin the fragment transaction
                 FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
-                transaction.replace(R.id.frameLayout, submitDataFragment); // Use the instance
-                transaction.addToBackStack(null); // Optional: Adds to back stack
+                transaction.replace(R.id.frameLayout, submitDataFragment);
+                transaction.addToBackStack(null);
                 transaction.commit();
+
             }
         });
 
+
+
+
+
+
+
         return rootView;
+    }
+
+    // Implement your logic to determine the type based on the project details here
+    private String getType() {
+        // For now, I'm returning a placeholder value "image" as an example
+        return "image";
     }
 
     private void showProgressDialog() {
@@ -134,4 +172,5 @@ public class Project_Details_Fragment extends Fragment  {
                 .replace(R.id.frameLayout, new Project_Desk_Fragment())
                 .commit();
     }
+
 }

@@ -9,7 +9,7 @@ public class RetrofitClient {
 
     private static final String BASE_URL = "https://tremoo.com/api/";
     private static Retrofit retrofit;
-    private static RetrofitClient retrofitClient;
+    public static RetrofitClient retrofitClient;
 
     private RetrofitClient() {
         // Create an OkHttpClient with logging interceptor

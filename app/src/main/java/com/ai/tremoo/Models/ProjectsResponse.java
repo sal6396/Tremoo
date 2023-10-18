@@ -20,6 +20,13 @@ public class ProjectsResponse {
         @SerializedName("puid")
         private String puid;
 
+        public String getType() {
+            return type;
+        }
+
+        @SerializedName("type") // Include project types in the response
+        private String type;
+
         public String getDetails() {
             return details;
         }
@@ -58,6 +65,8 @@ public class ProjectsResponse {
         public Category getCategory() {
             return category;
         }
+
+
 
         // Additional fields and methods can be added here based on your requirements
     }

@@ -83,6 +83,7 @@ public class Project_Desk_Fragment extends Fragment {
                 bundle.putString("details", selectedProject.getDetails());
                 bundle.putString("name", selectedProject.getCategory().getName());
                 bundle.putString("expiry_date", selectedProject.getExpiryDate());
+                bundle.putString("type", selectedProject.getType());
 
 
                 Project_Details_Fragment projectDetailsFragment = new Project_Details_Fragment();

@@ -9,6 +9,7 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:padding="6dp"
         android:layout_marginTop="55dp">
 
         <LinearLayout
@@ -34,7 +35,6 @@
                     <androidx.cardview.widget.CardView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
                         android:background="@color/white"
                         android:elevation="8dp">
 
@@ -49,7 +49,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="16dp"
-                                android:orientation="vertical"
+                                android:orientation="horizontal"
                                 android:visibility="visible">
 
                                 <TextView
@@ -57,6 +57,7 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="match_parent"
                                     android:text="Select Data Type: "
+                                    android:gravity="center"
                                     android:textColor="@color/black"
                                     android:textSize="15sp" />
 
@@ -143,6 +144,36 @@
                             </LinearLayout>
 
                             <LinearLayout
+                                android:id="@+id/discriptionContainer"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:layout_marginTop="10dp">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="match_parent"
+                                    android:gravity="center"
+                                    android:text="Description:"
+                                    android:textColor="@color/black"
+                                    android:layout_marginStart="35dp"
+                                    android:textSize="15sp" />
+
+                                <EditText
+                                    android:id="@+id/submissionDescription"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="80dp"
+                                    android:hint="Type Title"
+                                    android:gravity="top"
+                                    android:textColorHint="@color/black"
+                                    android:paddingStart="5dp"
+                                    android:background="@drawable/rectangle_input"
+                                    android:textColor="@color/black"
+                                    android:textSize="15sp" />
+
+                            </LinearLayout>
+
+                            <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="5dp"
@@ -195,23 +226,6 @@
                                     android:textColor="@color/black"
                                     android:padding="5dp"
                                     android:visibility="gone" />
-
-                            </LinearLayout>
-
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="67dp"
-                                android:orientation="vertical"
-                                android:layout_marginTop="5dp">
-
-                                <ImageView
-                                    android:id="@+id/imageView"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_gravity="center"
-                                    android:layout_marginTop="16dp"
-                                    android:src="@drawable/account"
-                                    />
 
                             </LinearLayout>
 
